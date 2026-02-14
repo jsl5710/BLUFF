@@ -327,7 +327,7 @@ See [`DATASET_CARD.md`](DATASET_CARD.md) for complete field-by-field documentati
 
 ## 📑 Data Collection & Methodology
 
-BLUFF implements an **8-stage pipeline** for multilingual generation and detection of false and synthetic content. The full pipeline is illustrated in the framework diagram above.
+The BLUFF pipeline, illustrated in the framework diagram above, implements an **eight-stage process** for multilingual generation and detection of false and synthetic content. Beginning with benchmark news corpora (**Stage 1**), we filter sources by reputation using the [Iffy Index](https://iffy.news/) (**Stage 2**), selecting reputable organizations for real news and flagged sources for fake news seeds. From a parametric dictionary (**Stage 3**), we configure generation variables: language (79), transformation technique (36 tactics or 3 AI-edits), editing degree (3 levels), and jailbreak strategy (21+). These parameters feed into differentiated AXL-CoI prompts (**Stage 4**) processed by 19 frontier mLLMs (**Stage 5**) to generate bidirectionally translated content (English↔70 languages). All outputs undergo mPURIFY quality filtering (**Stage 6**), removing hallucinations, mistranslations, and structural defects. We enrich the dataset with human-written, fact-checked content from IFCN-certified organizations. Our BLUFF scraper machine translates (50→79 languages) human-written data (**Stage 7**). Finally, we evaluate detection capabilities (**Stage 8**) using fine-tuned encoder-based and in-context learning decoder-based multilingual transformers.
 
 ### Stage 1–2: Source Data & Reputation Filtering
 

@@ -332,20 +332,11 @@ Each split directory contains:
 
 ### Overview: 8-Stage Pipeline
 
-The BLUFF pipeline implements an eight-stage process for multilingual generation and detection of false and synthetic content:
+The BLUFF pipeline, illustrated below, implements an eight-stage process for multilingual generation and detection of false and synthetic content. Beginning with benchmark news corpora (**Stage 1**), we filter sources by reputation using the [Iffy Index](https://iffy.news/) (**Stage 2**), selecting reputable organizations for real news and flagged sources for fake news seeds. From a parametric dictionary (**Stage 3**), we configure generation variables: language (79), transformation technique (36 tactics or 3 AI-edits), editing degree (3 levels), and jailbreak strategy (21+). These parameters feed into differentiated AXL-CoI prompts (**Stage 4**) processed by 19 frontier mLLMs (**Stage 5**) to generate bidirectionally translated content (English&#8596;70 languages). All outputs undergo mPURIFY quality filtering (**Stage 6**), removing hallucinations, mistranslations, and structural defects. We enrich the dataset with human-written, fact-checked content from IFCN-certified organizations. Our BLUFF scraper machine translates (50&#8594;79 languages) human-written data (**Stage 7**). Finally, we evaluate detection capabilities (**Stage 8**) using fine-tuned encoder-based and in-context learning decoder-based multilingual transformers.
 
 <p align="center">
   <img src="figures/bluff_framework_overview.png" alt="BLUFF Framework Overview" width="900"/>
 </p>
-
-1. **Benchmark News Data** — Source corpora from 4 diverse news datasets (297K+ seed articles)
-2. **Reputation Filtering** — Sources classified by Iffy Index: reputable organizations provide real news seeds; flagged sources provide fake news seeds
-3. **Parameter Configuration** — Generation variables configured: language (78), manipulation technique (36 tactics or 3 AI-edits), editing degree (3 levels), jailbreak strategy (21+)
-4. **AXL-CoI Prompting** — Parameters feed into differentiated prompts with 10 specialized agents (fake) or 8 agents (real)
-5. **Generation** — 19 frontier mLLMs produce bidirectional translated content (English&#8596;70 languages)
-6. **mPURIFY Filtering** — Quality filtering removes hallucinations, mistranslations, and structural defects
-7. **Human-Written Enrichment** — BLUFF scraper collects and machine-translates fact-checked content (50&#8594;79 languages)
-8. **Detection Evaluation** — Encoder-based fine-tuning and decoder-based in-context learning experiments
 
 ### Human-Written Content (HWT)
 
