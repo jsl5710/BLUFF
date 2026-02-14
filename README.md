@@ -261,56 +261,96 @@ python src/evaluation/decoder/inference.py \
 
 ## 📋 Data Format
 
+The dataset contains four data layers, each documented in full in [`DATASET_CARD.md`](DATASET_CARD.md):
+
 ### Processed Text Data (`data/processed/generated_data/`)
 
-Each processed CSV file contains cleaned, model-ready text data:
+Cleaned, model-ready text data organized by source type:
+
+**AI-Generated** (`ai_generated/{model}/{lang}/data.csv` — 22 columns):
 
 | Field | Description |
 |-------|-------------|
 | `uuid` | Unique sample identifier (links to metadata and splits) |
-| `article_content` | Full article text in the original language |
+| `article_content` | Full article text in the target language |
 | `translated_content` | English translation of the article |
-| `post_content` | Social media post version in the original language |
+| `post_content` | Social media post version in the target language |
 | `translated_post` | English translation of the post |
 | `language` | ISO 639-3 language code |
-| `model` | Generating model name |
+| `translation_directionality` | Generation direction: `eng_x` or `x_eng` |
+| `model` | Generating mLLM name |
 | `veracity` | `fake_news` or `real_news` |
-| `technique_keys` | Manipulation technique IDs applied |
-| `degree` | Edit intensity (`minor`, `moderate`, `critical`) |
+| `technique_keys` | Manipulation technique IDs applied (from 39-technique taxonomy) |
+| `degree` | Edit intensity: `minor`, `moderate`, or `critical` |
+| `source_dataset` | Source dataset name (e.g., `MassiveSum`, `GlobalNews`) |
+| `language(*)` | Detected languages for article, translation, post, and source (5 columns) |
+| `json_filepath` | Path to AXL-CoI generation JSON output |
 | `HAT` / `MGT` / `MTT` / `HWT` | Content type flags (`y`/`n`) |
 
-### Split Files (`data/splits/evaluation/`)
+**Human-Written** (`human_written/{org}/{lang}/data.csv` — 22 columns):
 
-Each split directory contains `train.json` and `val.json` — lists of UUIDs that map to samples in the metadata and processed data. Use these to construct train/val datasets for each experimental setting.
+| Field | Description |
+|-------|-------------|
+| `uuid` | Unique sample identifier |
+| `article_content` | Full fact-check article in the original language |
+| `translated_article` | English translation |
+| `article_summary` | Condensed summary |
+| `post_content` / `translated_post` | Social media post and its English translation |
+| `language` | ISO 639-3 language code |
+| `organization` | Fact-checking organization name |
+| `veracity` | Fact-checker verdict (e.g., `false`, `misleading`, `satire`) |
+| `country` | ISO 3166-1 alpha-3 country code |
+| `platform` | Social media platform of origin |
+| `category` / `topic` | Content category and topic classification |
+| `extraction_status` | Extraction completeness: `full` or `post_only` |
+| `*_lang` | Detected languages for each text field (5 columns) |
 
 ### Metadata (`data/meta_data/`)
 
-Rich per-sample metadata including quality filtering (mPURIFY) results, source information, language classification, and generation details.
+Rich per-sample metadata with quality filtering results, provenance, and generation details:
+
+- **`metadata_human_written.csv`** (122K rows, 33 columns) — Includes organization, country, platform, category, topic, language classification (`head`/`tail`), mPURIFY quality fields (`lang_pass`, `is_duplicate`, `json_parse`), and extraction paths
+- **`metadata_ai_generated.csv`** (78K rows, 29 columns) — Includes generating mLLM name, manipulation techniques, edit intensity, translation direction, source provenance, and mPURIFY filtering status
+
+### Split Files (`data/splits/evaluation/`)
+
+JSON arrays of UUIDs defining train/val splits. Each split directory contains `train.json`, `val.json`, and `stats.json`. UUIDs serve as foreign keys linking to metadata and processed data.
+
+### Raw Source Data (`data/raw/source_data/`)
+
+Original unprocessed source articles: fact-check articles from 331 IFCN/CredCatalog organizations (`human/`), and news article seeds used for AI generation organized by translation direction and veracity (`sd_eng_x_f/`, `sd_eng_x_r/`, `sd_x_eng_f/`, `sd_x_eng_r/`).
+
+See [`DATASET_CARD.md`](DATASET_CARD.md) for complete field-by-field documentation of all data files.
 
 ---
 
 ## 📑 Data Collection & Methodology
 
 ### Human-Written Text (HWT)
-- **Sources:** IFCN-certified fact-checking organizations and CredCatalog-indexed publishers
+- **Sources:** 331 IFCN-certified fact-checking organizations and CredCatalog-indexed publishers across 99 countries
 - **Languages:** 57 languages, 122,836 samples
-- **Process:** Collected, deduplicated, language-verified, and labeled by professional fact-checkers
+- **Collection:** Custom scrapers collected fact-check articles; multi-tool language detection (fastText, langdetect, langid) verified language consistency; near-duplicate detection via MinHash removed redundant content
+- **Labels:** Veracity labels inherited directly from professional fact-checker verdicts, standardized to `fake_news`/`real_news`
 
 ### LLM-Generated Content (MGT/MTT/HAT)
-- **Framework:** AXL-CoI (Adversarial Cross-Lingual Agentic Chain-of-Interactions)
-- **Models:** 19 multilingual LLMs (GPT-4o, Claude, Gemini, Llama, Qwen, Aya, etc.)
+- **Framework:** AXL-CoI (Adversarial Cross-Lingual Agentic Chain-of-Interactions) — a multi-agent pipeline for controlled adversarial generation
+- **Models:** 19 multilingual LLMs including GPT-4.1, o1, Gemini 1.5/2.0, Llama 3.3/4, DeepSeek-R1 variants, Aya Expanse 32B, Qwen3-Next 80B, QwQ-32B, Mistral Large, Phi-4 Multimodal
 - **Languages:** 71 languages, 78,443 samples
-- **Tactics:** 36 manipulation tactics for fake news, 3 editing strategies for real news
-- **Translation:** Bidirectional (English ↔ X) with quality verification
+- **Techniques:** 39 textual modification techniques (36 manipulation tactics for fake news + 3 AI-editing strategies for real news) applied at 3 intensity levels (`minor`, `moderate`, `critical`)
+- **Directionality:** Bidirectional generation (English→X and X→English) with quality verification
+- **Content Types:** MGT (fully machine-generated), MTT (machine-translated), HAT (human-AI hybrid)
 
 ### Quality Filtering (mPURIFY)
-- Language consistency verification
-- Semantic preservation scoring
-- Factual manipulation validation
-- Deduplication and near-duplicate detection
-- Human spot-check validation
+All AI-generated content is processed through the mPURIFY pipeline (32 features, 5 dimensions):
+1. **Language Consistency** — Multi-tool verification that output matches target language (`lang_pass` field)
+2. **Semantic Preservation** — Coherence scoring against source material
+3. **Factual Manipulation Validation** — Confirms intended techniques were applied
+4. **Deduplication** — MinHash-based near-duplicate detection (`is_duplicate` field)
+5. **Format Validation** — JSON parsing and structural integrity checks (`json_parse`, `json_repaired` fields)
 
-See the paper and [`DATASHEET.md`](DATASHEET.md) for full methodology details.
+Results are recorded in metadata fields (`mPURIFY` in AI metadata, `lang_pass`/`is_duplicate`/`json_parse` in both).
+
+See the paper, [`DATASET_CARD.md`](DATASET_CARD.md), and [`DATASHEET.md`](DATASHEET.md) for complete methodology details.
 
 ---
 
