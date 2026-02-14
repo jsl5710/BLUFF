@@ -18,7 +18,7 @@
 
 > **Paper:** *BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news*
 > **Authors:** Jason Lucas, Matt Murtagh-White, Adaku Uchendu, Ali Al-Lawati, Michiharu Yamashita, Dominik Macko, Ivan Srba, Robert Moro, Dongwon Lee
-> **Venue:** KDD 2026 — Datasets and Benchmarks Track
+> **Venue:** Under Review 2026 — Datasets and Benchmarks Track
 
 ---
 
