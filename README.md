@@ -329,20 +329,28 @@ See [`DATASET_CARD.md`](DATASET_CARD.md) for complete field-by-field documentati
 
 The BLUFF pipeline, illustrated in the framework diagram above, implements an **eight-stage process** for multilingual generation and detection of false and synthetic content. Beginning with benchmark news corpora (**Stage 1**), we filter sources by reputation using the [Iffy Index](https://iffy.news/) (**Stage 2**), selecting reputable organizations for real news and flagged sources for fake news seeds. From a parametric dictionary (**Stage 3**), we configure generation variables: language (79), transformation technique (36 tactics or 3 AI-edits), editing degree (3 levels), and jailbreak strategy (21+). These parameters feed into differentiated AXL-CoI prompts (**Stage 4**) processed by 19 frontier mLLMs (**Stage 5**) to generate bidirectionally translated content (English↔70 languages). All outputs undergo mPURIFY quality filtering (**Stage 6**), removing hallucinations, mistranslations, and structural defects. We enrich the dataset with human-written, fact-checked content from IFCN-certified organizations. Our BLUFF scraper machine translates (50→79 languages) human-written data (**Stage 7**). Finally, we evaluate detection capabilities (**Stage 8**) using fine-tuned encoder-based and in-context learning decoder-based multilingual transformers.
 
-### Stage 1–2: Source Data & Reputation Filtering
+### Multilingual Generation Pipeline
 
-**Source Corpora (297K+ seed articles):**
+#### Source Corpora (297K+ seed articles)
 
 | Dataset | Articles | Description |
 |---------|----------|-------------|
 | Global News | 82K | 31+ international news organizations |
 | CNN/Daily Mail | 82K | English-language news |
-| MassiveSumm | 51K | Multilingual articles across 78 languages |
+| MassiveSumm | 51K | Multilingual articles across 79 languages |
 | Visual News | 82K | News articles with visual content |
 
-Sources classified by reputation using the [Iffy Index](https://iffy.news/): reputable organizations (BBC, CNN, The Guardian, Al Jazeera) provide real news seeds; flagged sources provide fake news seeds. Stratified random sampling (seed 42) by language, organization, and location ensures diversity.
+Sources are classified by reputation using the [Iffy Index](https://iffy.news/): reputable organizations (BBC, CNN, The Guardian, Al Jazeera) provide real news seeds, while flagged sources provide fake news seeds for adversarial transformation. We use stratified random sampling (seed 42) by language, organization, and location to obtain the **297K+** samples, with a given sample used only once in the generation pipeline.
 
-### Stage 3–5: AXL-CoI Generation Framework
+#### Generation Models
+
+We employ **19 state-of-the-art decoder-based mLLMs**: 13 instruction-tuned LLMs (GPT-4.1, Gemini 1.5/2.0 variants, Llama 3.3/4 family, Aya Expanse 32B, Mistral Large, Phi-4) and 6 reasoning-focused LRMs (DeepSeek-R1 variants, QwQ 32B, OpenAI o1, Gemini 2.0 Flash Thinking). Model selection prioritizes: (i) language coverage spanning big-head and long-tail languages, (ii) fidelity in following long structured instructions, and (iii) reliability in orchestrating multi-agent CoI roles.
+
+#### Bidirectional Translation
+
+AXL-CoI implements four prompt variants enabling comprehensive cross-lingual evaluation: Fake/Real News × Eng→X (70 languages) and X→Eng (50 languages). This bidirectional architecture captures both English-centric disinformation propagation and multilingual-to-English flows characteristic of real-world campaigns.
+
+#### AXL-CoI Generation Framework
 
 **AXL-CoI** (Adversarial Cross-Lingual Agentic Chain-of-Interactions) is a novel multi-agentic framework that embeds specialized agents within a single mLLM prompt for multi-step content transformation, translation, change tracking, validation, and self-correction.
 
@@ -352,43 +360,77 @@ Sources classified by reputation using the [Iffy Index](https://iffy.news/): rep
 
 **Generation Parameters (7 orthogonal dimensions):** veracity, editing degree (3 levels), manipulation technique (39 types), translation direction (Eng↔X), format (article/post), authorship (HWT/MGT/MTT/HAT), generation model (19 mLLMs) — yielding **30,240 unique fake news** and **144 real news configurations** per language.
 
-**19 Generation Models:** GPT-4.1, o1, Gemini 1.5 Flash/Pro, Gemini 2.0 Flash/Thinking, Llama 3.3 70B, Llama 4 Maverick/Scout, DeepSeek-R1/R1-Turbo/R1-Distill, Aya Expanse 32B, Qwen3-Next 80B, QwQ-32B, Mistral Large, Phi-4 Multimodal
+#### Scale
 
-### Stage 6: Quality Filtering (mPURIFY)
-
-<p align="center">
-  <img src="figures/mPURiFY_overview.png" alt="mPURIFY Pipeline" width="500"/>
-</p>
-
-mPURIFY combines heuristics, standard AEM, and LLM-based AEM across **5 dimensions** using **32 evaluation features**:
-
-| Dimension | Standard AEM Methods | LLM-AEM Metrics |
-|-----------|---------------------|-----------------|
-| **Consistency** | MENLI, FrugalScore, AlignScore, BERTScore, sentiment | Factual, logical, semantic, contextual alignment |
-| **Validation** | LLM-DetectAIve, Jaccard/Levenshtein/Difflib | Change validity, technique confirmation |
-| **Translation** | YiSi-2, COMET-QE, LaBSE-BERTScore, fastText/pycld3/Polyglot | Accuracy, fluency, terminology, localization |
-| **Hallucination** | SelfCheckGPT | Intrinsic cross-lingual hallucination detection |
-| **Defective** | Structure/format checks | Incomplete chains, malformed JSON |
-
-**Filtering results:** 181,966 initial → 87,211 defect-free → **79,559 retained (43.7%)**.
+The pipeline produces approximately **181K samples** (MGT, MTT, HAT) across 71 languages, each comprising news articles and social media posts in source and target languages (4 texts per sample). It ensures balanced veracity and robust coverage of manipulation tactics (1,890 unique combinations) and AI editing strategies (9 combinations) across 3 text modification degrees.
 
 <p align="center">
   <img src="figures/fig_generation_pipeline.png" alt="Generation Pipeline Results" width="700"/>
 </p>
 
-### Stage 7: Human-Written Content (HWT)
+### mPURIFY: Multilingual Quality Filter
+
+<p align="center">
+  <img src="figures/mPURiFY_overview.png" alt="mPURIFY Pipeline" width="500"/>
+</p>
+
+To ensure dataset integrity, we extend the PURIFY framework to multilingual settings. **mPURIFY** combines heuristics, standard automatic evaluation metrics (AEM), and LLM-based AEM to assess generation quality across five dimensions: consistency, validation, translation, hallucination/manipulation, and defective generation.
+
+#### Standard AEM Dimensions
+
+We employ established metrics with majority voting or averaging:
+
+| Dimension | Standard AEM Methods | Purpose |
+|-----------|---------------------|---------|
+| **Consistency** | MENLI, FrugalScore (logical), AlignScore (factual), BERTScore (semantic), sentiment matching | Cross-field semantic coherence |
+| **Validation** | LLM-DetectAIve for authorship (HWT/MGT/HAT), edit distance via Jaccard/Levenshtein/Difflib | Structural completeness, format compliance |
+| **Translation** | YiSi-2, COMET-QE, LaBSE-BERTScore for semantic quality; fastText/pycld3/Polyglot for language ID (176–196 languages) | Language verification, translation fidelity |
+| **Hallucination** | SelfCheckGPT with multilingual probes | Factual grounding, fabrication detection |
+| **Defective** | Structure/format checks | Encoding issues, truncation, malformed JSON |
+
+All methods use XLM-R variants for cross-lingual support.
+
+#### LLM-AEM Dimensions
+
+Each output is scored on **32 features** across: (i) *Consistency*—factual, logical, semantic, and contextual alignment with source content, plus topic and sentiment matching; (ii) *Validation*—whether documented changes were accurately applied and manipulation tactics are present; (iii) *Translation*—accuracy, fluency, terminology, localization, coherence, and language identification; (iv) *Hallucination/Manipulation*—intrinsic cross-lingual hallucination detection; (v) *Defective Generation*—structural errors including incomplete CoI-chains, malformed JSON format, and empty CoI-form.
+
+#### Filtering Pipeline
+
+mPURIFY executes **four sequential stages**: (1) defect identification, (2) LLM-based AEM scoring, (3) standard AEM scoring, and (4) threshold-based filtering. For Likert-scale metrics, we apply asymmetric thresholds: e.g., real news requires ≥4.0 (high fidelity), while fake news accepts ≤3.0 (allowing deliberate deviations). Label-based metrics use majority voting across LLM-based and standard AEM methods.
+
+**Filtering results:** 181,966 initial → 87,211 defect-free → **79,559 retained (43.7%)**.
+
+### Human-Written Data Curation
 
 <p align="center">
   <img src="figures/bluff_webscrapper_overview.jpg" alt="BLUFF Crawler" width="600"/>
 </p>
 
-- **Sources:** 331 IFCN-certified fact-checking organizations (Poynter IFCN Signatories) and CredCatalog-indexed publishers across 99 countries
-- **Languages:** 57 languages, 122,836 samples
-- **Collection:** AI-assisted crawler extracts claims, articles, source content, metadata, social media posts, and translations; multi-tool language detection (fastText, pycld3, Polyglot) with majority voting; MinHash near-duplicate removal
-- **Labels:** Veracity labels inherited from professional fact-checker verdicts, standardized to `fake_news`/`real_news`
-- **Translation:** Content from 50 source languages machine-translated to expand coverage to 79 languages
+To complement machine-generated content, we curate human-written fact-checked examples from reputable sources worldwide.
 
-### Stage 8: Detection Evaluation
+#### Source Selection
+
+We target organizations certified by the International Fact-Checking Network ([IFCN](https://www.poynter.org/ifcn/)) and indexed in the Credibility Coalition's CredCatalog. IFCN certification requires adherence to principles of nonpartisanship, source transparency, funding disclosure, methodology transparency, and open corrections—ensuring high-quality ground truth labels.
+
+#### Coverage
+
+The crawler retrieved verified claims and news from **130 organizations**, including Agence France-Presse, PolitiFact, Snopes, Maldita (Spain), Chequeado (Argentina), Agência Lupa (Brazil), VoxCheck (Ukraine), Fact Crescendo (India), and regional outlets spanning Asia, Europe, Africa, and the Caribbean—covering **57 languages** (19 big-head, 38 long-tail).
+
+#### Processing
+
+After extensive cleaning—removing missing text, validating language identity, and deduplicating—we retain **122,836 human-written samples**, providing broad geographic and linguistic coverage as authentic ground truth for training and evaluation. We employ Qwen3-8B for content generation (social media posts and news articles) and translation (79 languages), and Qwen3-32B with GPT-5 for language identification via majority voting.
+
+### Dataset Statistics
+
+**Scale and Composition.** The final BLUFF dataset comprises **202K+ samples** across **79 languages** (20 big-head, 59 long-tail): 122,836 human-written (61%) and 79K+ machine-generated (39%). Each sample spans two formats (news article, social media post) × two languages (source, target). Content spans 12 geographic regions with 331 source organizations.
+
+**Authorship Distribution.** BLUFF provides four authorship types reflecting practical multi-author scenarios: HWT (human-written from web-crawled fact-checks; 122,836), HAT (human-AI collaborative at minor–moderate degrees; 68,148), MGT (machine-generated at complete/critical degrees; 19,234), and MTT (machine-translated articles and posts; 156,886). This diversity enables fine-grained Synthetic Text Detection beyond binary human/machine classification.
+
+**Manipulation Coverage.** The fake news corpus achieves **100% coverage** of all 1,890 possible (tactic-pair, degree) combinations, systematically representing the disinformation strategy space. The real news corpus covers 5 of 9 editing configurations (55.6%).
+
+**Linguistic Diversity.** Languages span 12 genetic families (Indo-European, Sino-Tibetan, Afro-Asiatic, etc.), 9 script types (Latin, Cyrillic, Arabic, Devanagari, etc.), and 6 syntactic typologies (SVO, SOV, VSO, etc.), enabling systematic evaluation across linguistic dimensions.
+
+### Detection Evaluation
 
 Systematic benchmarking across 6 training settings with encoder-based fine-tuning and decoder-based in-context learning. Results reveal **up to 25.3% F1 degradation** on low-resource versus high-resource languages, with analysis across linguistic groupings (family, syntax, script, resource level).
 

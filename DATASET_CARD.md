@@ -338,13 +338,17 @@ The BLUFF pipeline, illustrated below, implements an eight-stage process for mul
   <img src="figures/bluff_framework_overview.png" alt="BLUFF Framework Overview" width="900"/>
 </p>
 
-### Human-Written Content (HWT)
+### Human-Written Data Curation
 
 <p align="center">
   <img src="figures/bluff_webscrapper_overview.jpg" alt="BLUFF Web Scraper" width="700"/>
 </p>
 
-**Sources:** 331 IFCN-certified fact-checking organizations and CredCatalog-indexed publishers across 57 languages and 99 countries.
+To complement machine-generated content, we curate human-written fact-checked examples from reputable sources worldwide.
+
+**Source Selection.** We target organizations certified by the International Fact-Checking Network ([IFCN](https://www.poynter.org/ifcn/)) and indexed in the Credibility Coalition's CredCatalog. IFCN certification requires adherence to principles of nonpartisanship, source transparency, funding disclosure, methodology transparency, and open corrections—ensuring high-quality ground truth labels.
+
+**Coverage.** The crawler retrieved verified claims and news from **130 organizations**, including Agence France-Presse, PolitiFact, Snopes, Maldita (Spain), Chequeado (Argentina), Agência Lupa (Brazil), VoxCheck (Ukraine), Fact Crescendo (India), and regional outlets spanning Asia, Europe, Africa, and the Caribbean—covering **57 languages** (19 big-head, 38 long-tail).
 
 **Collection Process:**
 1. **Source Identification:** Fact-checking organizations identified from the IFCN Signatories Database (Poynter Institute) and Duke Reporters' Lab Credibility Coalition (CredCatalog)
@@ -354,17 +358,17 @@ The BLUFF pipeline, illustrated below, implements an eight-stage process for mul
 5. **Deduplication:** Near-duplicate detection via MinHash and Jaccard similarity
 6. **Machine Translation:** Content from 50 source languages machine-translated to expand coverage to 79 languages for cross-lingual evaluation
 
+**Processing.** After extensive cleaning—removing missing text, validating language identity, and deduplicating—we retain **122,836 human-written samples**, providing broad geographic and linguistic coverage as authentic ground truth for training and evaluation. We employ Qwen3-8B for content generation (social media posts and news articles) and translation (79 languages), and Qwen3-32B with GPT-5 for language identification via majority voting.
+
 **Veracity Labels:** Inherited directly from professional fact-checker verdicts. Original labels (e.g., `false`, `misleading`, `satire`, `unverified`, `mostly false`, `needs context`) standardized to `fake_news` or `real_news` for binary classification tasks.
 
-**Scale:** 122,836 samples across 57 languages from 331 organizations spanning 99 countries.
-
-### LLM-Generated Content (MGT/MTT/HAT)
+### Multilingual Generation Pipeline (MGT/MTT/HAT)
 
 **Framework:** AXL-CoI (Adversarial Cross-Lingual Agentic Chain-of-Interactions) — a novel multi-agentic framework that embeds specialized agents within a single prompt to perform multi-step content transformation, translation, change tracking, validation, and self-correction.
 
 #### Source Corpora
 
-Seed articles drawn from four diverse news datasets via stratified random sampling (seed 42) by language, organization, and location:
+Seed articles drawn from four diverse news datasets via stratified random sampling (seed 42) by language, organization, and location. Each seed is used only once in the generation pipeline:
 
 | Source Dataset | Articles | Description |
 |---------------|----------|-------------|
@@ -449,9 +453,13 @@ Model selection prioritized: (i) language coverage spanning big-head and long-ta
 - **MTT (Machine-Translated Text):** Machine-translated content across language pairs
 - **HAT (Human-AI Hybrid):** Content combining human-written and AI-generated elements
 
+#### Bidirectional Translation
+
+AXL-CoI implements **four prompt variants** enabling comprehensive cross-lingual evaluation: Fake/Real News × Eng→X (70 languages) and X→Eng (50 languages). This bidirectional architecture captures both English-centric disinformation propagation and multilingual-to-English flows characteristic of real-world campaigns.
+
 #### Generation Scale
 
-The pipeline produced approximately 181K raw samples (MGT, MTT, HAT) across 71 languages, each comprising news articles and social media posts in source and target languages (4 texts per sample).
+The pipeline produces approximately **181K samples** (MGT, MTT, HAT) across 71 languages, each comprising news articles and social media posts in source and target languages (4 texts per sample). It ensures balanced veracity and robust coverage of manipulation tactics (1,890 unique combinations) and AI editing strategies (9 combinations) across 3 text modification degrees.
 
 ### Quality Filtering (mPURIFY)
 
@@ -459,7 +467,7 @@ The pipeline produced approximately 181K raw samples (MGT, MTT, HAT) across 71 l
   <img src="figures/mPURiFY_overview.png" alt="mPURIFY Overview" width="600"/>
 </p>
 
-mPURIFY extends the PURIFY framework to multilingual settings, combining heuristics, standard automatic evaluation metrics (S-AEM), and LLM-based AEM (LLM-AEM) to assess generation quality across **5 dimensions** using **32 evaluation features**.
+To ensure dataset integrity, we extend the PURIFY framework to multilingual settings. **mPURIFY** combines heuristics, standard automatic evaluation metrics (S-AEM), and LLM-based AEM (LLM-AEM) to assess generation quality across **5 dimensions** using **32 evaluation features**.
 
 #### Standard AEM Dimensions
 
@@ -499,7 +507,7 @@ Each output is scored on 32 features with asymmetric thresholds: real news requi
   <img src="figures/fig_generation_pipeline.png" alt="Generation Pipeline Results" width="700"/>
 </p>
 
-mPURIFY executes four sequential stages: (1) defect identification, (2) LLM-based AEM scoring, (3) standard AEM scoring, and (4) threshold-based filtering.
+mPURIFY executes **four sequential stages**: (1) defect identification, (2) LLM-based AEM scoring, (3) standard AEM scoring, and (4) threshold-based filtering. For Likert-scale metrics, we apply asymmetric thresholds: e.g., real news requires ≥4.0 (high fidelity), while fake news accepts ≤3.0 (allowing deliberate deviations). Label-based metrics use majority voting across LLM-based and standard AEM methods.
 
 | Stage | Samples | Description |
 |-------|---------|-------------|
@@ -522,6 +530,25 @@ The retention differential (real: 23.0% vs fake: 20.1%) reflects the greater com
 8. **UUID Assignment:** Universally unique identifiers assigned for cross-referencing across all data files
 9. **Split Generation:** Stratified splits ensuring balanced representation across languages, content types, and resource categories
 
+### Dataset Statistics
+
+**Scale and Composition.** The final BLUFF dataset comprises **202K+ samples** across **79 languages** (20 big-head, 59 long-tail): 122,836 human-written (61%) and 79K+ machine-generated (39%). Each sample spans two formats (news article, social media post) × two languages (source, target). Content spans 12 geographic regions with 331 source organizations.
+
+**Authorship Distribution.** BLUFF provides four authorship types reflecting practical multi-author scenarios:
+
+| Type | Description | Samples |
+|------|-------------|---------|
+| **HWT** | Human-written from web-crawled fact-checks | 122,836 |
+| **HAT** | Human-AI collaborative at minor–moderate degrees | 68,148 |
+| **MGT** | Machine-generated at complete/critical degrees | 19,234 |
+| **MTT** | Machine-translated articles and posts | 156,886 |
+
+This diversity enables fine-grained Synthetic Text Detection beyond binary human/machine classification, reflecting real-world content co-production between humans and AI.
+
+**Manipulation Coverage.** The fake news corpus achieves **100% coverage** of all 1,890 possible (tactic-pair, degree) combinations, systematically representing the disinformation strategy space. The real news corpus covers 5 of 9 editing configurations (55.6%).
+
+**Linguistic Diversity.** Languages span 12 genetic families (Indo-European, Sino-Tibetan, Afro-Asiatic, etc.), 9 script types (Latin, Cyrillic, Arabic, Devanagari, etc.), and 6 syntactic typologies (SVO, SOV, VSO, etc.), enabling systematic evaluation across linguistic dimensions.
+
 ---
 
 ## Training Settings
@@ -529,7 +556,7 @@ The retention differential (real: 23.0% vs fake: 20.1%) reflects the greater com
 | Setting | Split Directory | Description |
 |---------|----------------|-------------|
 | Multilingual | `multilingual/` | Train and evaluate on all 79 languages |
-| Cross-lingual (Head→Tail) | `cross_lingual_bighead_longtail/` | Train on 20 big-head languages, evaluate on 58 long-tail |
+| Cross-lingual (Head→Tail) | `cross_lingual_bighead_longtail/` | Train on 20 big-head languages, evaluate on 59 long-tail |
 | Cross-lingual (Family) | `cross_lingual_family/{Family}/` | Leave-one-language-family-out evaluation |
 | Cross-lingual (Script) | `cross_lingual_script/{Script}/` | Leave-one-script-type-out evaluation |
 | Cross-lingual (Syntax) | `cross_lingual_syntax/{Order}/` | Leave-one-syntactic-order-out evaluation |
@@ -556,7 +583,7 @@ The dataset contains no personally identifiable information. All source content 
 
 ### Social Impact
 
-BLUFF aims to improve disinformation detection capabilities for underserved linguistic communities. The 58 long-tail languages covered represent communities that are disproportionately vulnerable to disinformation due to the lack of detection tools and fact-checking infrastructure.
+BLUFF aims to improve disinformation detection capabilities for underserved linguistic communities. The 59 long-tail languages covered represent communities that are disproportionately vulnerable to disinformation due to the lack of detection tools and fact-checking infrastructure.
 
 ### Known Limitations
 
