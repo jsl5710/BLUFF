@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <meta name="title" content="BLUFF: A Benchmark for Linguistic Understanding of Fake-news Forensics">
+  <meta name="title" content="BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news">
   <meta name="description" content="BLUFF is a comprehensive multilingual benchmark for fake news detection spanning 78 languages with over 201K samples, addressing critical gaps in multilingual disinformation research.">
   <meta name="keywords" content="fake news detection, multilingual benchmark, disinformation, NLP, cross-lingual transfer, LLM-generated text detection, KDD 2026">
   <meta name="author" content="Jason Lucas, Dongwon Lee">
@@ -14,10 +14,10 @@
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="PIKE Research Lab, Penn State University">
-  <meta property="og:title" content="BLUFF: A Benchmark for Linguistic Understanding of Fake-news Forensics">
+  <meta property="og:title" content="BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news">
   <meta property="og:description" content="BLUFF is a comprehensive multilingual benchmark for fake news detection spanning 78 languages with over 201K samples.">
   <meta property="og:url" content="https://jsl5710.github.io/BLUFF">
-  <meta property="og:image" content="https://jsl5710.github.io/BLUFF/static/images/social_preview.png">
+  <meta property="og:image" content="https://jsl5710.github.io/BLUFF/static/images/bluff_framework_overview.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="BLUFF Benchmark Overview">
@@ -29,13 +29,13 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="BLUFF: A Benchmark for Linguistic Understanding of Fake-news Forensics">
+  <meta name="twitter:title" content="BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news">
   <meta name="twitter:description" content="BLUFF is a comprehensive multilingual benchmark for fake news detection spanning 78 languages with over 201K samples.">
-  <meta name="twitter:image" content="https://jsl5710.github.io/BLUFF/static/images/social_preview.png">
+  <meta name="twitter:image" content="https://jsl5710.github.io/BLUFF/static/images/bluff_framework_overview.png">
   <meta name="twitter:image:alt" content="BLUFF Benchmark Overview">
 
   <!-- Academic/Research Specific -->
-  <meta name="citation_title" content="BLUFF: A Benchmark for Linguistic Understanding of Fake-news Forensics">
+  <meta name="citation_title" content="BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news">
   <meta name="citation_author" content="Lucas, Jason">
   <meta name="citation_author" content="Lee, Dongwon">
   <meta name="citation_publication_date" content="2026">
@@ -53,7 +53,7 @@
   <link rel="preconnect" href="https://ajax.googleapis.com">
   <link rel="preconnect" href="https://cdn.jsdelivr.net">
 
-  <title>BLUFF: A Benchmark for Linguistic Understanding of Fake-news Forensics | KDD 2026</title>
+  <title>BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news | KDD 2026</title>
 
   <!-- Favicon and App Icons -->
   <link rel="icon" type="image/x-icon" href="static/images/favicon.ico">
@@ -92,7 +92,7 @@
   {
     "@context": "https://schema.org",
     "@type": "ScholarlyArticle",
-    "headline": "BLUFF: A Benchmark for Linguistic Understanding of Fake-news Forensics",
+    "headline": "BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news",
     "description": "A comprehensive multilingual benchmark for fake news detection spanning 78 languages with over 201K samples.",
     "author": [
       {
@@ -150,7 +150,7 @@
       <div class="container is-max-desktop">
         <div class="columns is-centered">
           <div class="column has-text-centered">
-            <h1 class="title is-1 publication-title">BLUFF: A Benchmark for Linguistic Understanding of Fake-news Forensics</h1>
+            <h1 class="title is-1 publication-title">BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news</h1>
             <div class="is-size-5 publication-authors">
               <span class="author-block">
                 <a href="https://jasonlucas.info" target="_blank">Jason Lucas</a>,</span>
@@ -224,10 +224,9 @@
 <section class="hero teaser">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <!-- Replace with actual overview figure when PNG is ready -->
-      <img src="static/images/bluff_overview.png" alt="BLUFF Benchmark Overview" style="width:100%; border-radius: 8px;"/>
+      <img src="static/images/bluff_framework_overview.png" alt="BLUFF Framework Overview: An 8-stage pipeline for multilingual fake news benchmark construction" style="width:100%; border-radius: 8px;"/>
       <h2 class="subtitle has-text-centered" style="margin-top: 1rem;">
-        BLUFF spans 78 languages across 12 language families, covering both high-resource "big-head" (20) and low-resource "long-tail" (58) languages with 201K+ samples and 4 benchmark tasks.
+        <strong>BLUFF Framework Overview.</strong> An 8-stage pipeline spanning data sourcing, adversarial generation via AXL-CoI, quality filtering with mPURIFY, and comprehensive evaluation across 78 languages, 12 language families, and 4 benchmark tasks.
       </h2>
     </div>
   </div>
@@ -242,8 +241,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            <!-- TODO: Replace with actual paper abstract from manuscript -->
-            Disinformation spreads across linguistic boundaries, yet existing detection benchmarks are predominantly English-centric, leaving the global majority of languages unaddressed. We introduce <strong>BLUFF</strong> (Benchmark for Linguistic Understanding of Fake-news Forensics), a comprehensive multilingual benchmark spanning <strong>78 languages</strong> across 12 language families, 10+ script types, and 4 syntactic typologies. BLUFF contains over <strong>201,000 samples</strong> combining 122,836 human-written texts from IFCN-certified fact-checking organizations with 78,443 LLM-generated samples produced by 19 multilingual LLMs using our novel <strong>AXL-CoI</strong> (Adversarial Cross-Lingual Agentic Chain-of-Interactions) framework. The dataset features 4 content types (HWT, MGT, MTT, HAT), 39 textual modification techniques, and supports 4 benchmark tasks across veracity classification and authorship detection. We evaluate 5 multilingual encoders and 7 decoder models across 6 training settings, revealing significant performance gaps of 9&ndash;25% between high-resource and low-resource languages. Our quality filtering pipeline, <strong>mPURIFY</strong>, ensures dataset integrity through 32 features across 5 dimensions.
+            Disinformation spreads across linguistic boundaries, yet existing detection benchmarks remain predominantly English-centric, leaving the global majority of languages unaddressed. We introduce <strong>BLUFF</strong> (<strong>B</strong>enchmarking in <strong>L</strong>ow-reso<strong>U</strong>rce Languages for detecting <strong>F</strong>alsehoods and <strong>F</strong>ake news), a comprehensive multilingual benchmark spanning <strong>78 languages</strong> across 12 language families, 10+ script types, and 4 syntactic typologies. BLUFF contains over <strong>201,000 samples</strong> (313,772 total text instances) combining 122,836 human-written texts from IFCN-certified fact-checking organizations with 78,443 LLM-generated samples produced by <strong>19 multilingual LLMs</strong> (13 instruction-tuned + 6 reasoning-focused) using our novel <strong>AXL-CoI</strong> (Adversarial Cross-Lingual Agentic Chain-of-Interactions) framework. The framework introduces <strong>ADIS</strong> (Autonomous Dynamic Impersonation Self-Attack), achieving a 100% safety bypass rate across all 19 frontier models through 21 dynamically-generated impersonation strategies. Quality is ensured through <strong>mPURIFY</strong>, a filtering pipeline employing 32 features across 5 dimensions (consistency, validation, translation, hallucination, defective), reducing 181,966 initial samples to 78,443 retained (43.1% retention rate). We evaluate 5 multilingual encoders and 7 decoder models across 6 training settings, revealing significant performance gaps of 9&ndash;25% between high-resource and low-resource languages, underscoring the urgent need for linguistically diverse benchmarks.
           </p>
         </div>
       </div>
@@ -269,14 +267,14 @@
         <div class="box has-text-centered">
           <p class="title is-1" style="color: #2563eb;">201K+</p>
           <p class="subtitle is-5">Samples</p>
-          <p class="is-size-7">122K human-written + 78K LLM-generated</p>
+          <p class="is-size-7">122K human-written + 78K LLM-generated (313K text instances)</p>
         </div>
       </div>
       <div class="column is-4">
         <div class="box has-text-centered">
           <p class="title is-1" style="color: #2563eb;">19</p>
           <p class="subtitle is-5">LLMs Used</p>
-          <p class="is-size-7">GPT-4o, Claude, Gemini, Llama, Qwen, Aya, and more</p>
+          <p class="is-size-7">GPT-4o, Claude, Gemini, Llama, Qwen, Aya, DeepSeek &amp; more</p>
         </div>
       </div>
       <div class="column is-4">
@@ -295,9 +293,9 @@
       </div>
       <div class="column is-4">
         <div class="box has-text-centered">
-          <p class="title is-1" style="color: #2563eb;">6</p>
-          <p class="subtitle is-5">Training Settings</p>
-          <p class="is-size-7">Cross-lingual + multilingual + external evaluation</p>
+          <p class="title is-1" style="color: #2563eb;">297K+</p>
+          <p class="subtitle is-5">Seed Articles</p>
+          <p class="is-size-7">From Global News, CNN/DM, MassiveSumm, Visual News</p>
         </div>
       </div>
     </div>
@@ -306,10 +304,187 @@
 <!-- End Key Highlights -->
 
 
+<!-- Methodology: AXL-CoI Framework -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Methodology</h2>
+
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h3 class="title is-4">AXL-CoI: Adversarial Cross-Lingual Agentic Chain-of-Interactions</h3>
+        <div class="content has-text-justified">
+          <p>
+            BLUFF's fake news generation relies on <strong>AXL-CoI</strong>, an autonomous multi-agent pipeline that orchestrates LLMs through chained interactions to produce realistic multilingual disinformation. The framework operates through two complementary pipelines:
+          </p>
+          <ul>
+            <li><strong>Fake news pipeline (10 chains):</strong> Source ingestion &rarr; ADIS safety bypass &rarr; adversarial persona assignment &rarr; cross-lingual manipulation &rarr; social media adaptation &rarr; translation &rarr; style transfer &rarr; quality verification &rarr; metadata extraction &rarr; output aggregation</li>
+            <li><strong>Real news pipeline (8 chains):</strong> Source ingestion &rarr; content extraction &rarr; cross-lingual translation &rarr; social media adaptation &rarr; translation &rarr; style normalization &rarr; metadata extraction &rarr; output aggregation</li>
+          </ul>
+          <p>
+            A key innovation is <strong>ADIS</strong> (Autonomous Dynamic Impersonation Self-Attack), which achieves a <strong>100% safety bypass rate</strong> across all 19 frontier models. Unlike static jailbreaks, ADIS dynamically generates context-appropriate impersonation strategies (21 unique strategies identified) that frame fake news generation as legitimate professional activities (e.g., journalism education, media literacy research, fact-checking training).
+          </p>
+        </div>
+
+        <div class="has-text-centered" style="margin: 2rem 0;">
+          <img src="static/images/fig_generation_pipeline.png" alt="AXL-CoI Generation Pipeline showing 7 orthogonal dimensions" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);"/>
+          <p class="is-size-7 has-text-centered" style="margin-top: 0.5rem; color: #64748b;">
+            <strong>Generation Pipeline.</strong> Seven orthogonal dimensions (language, directionality, model, veracity, source, technique, degree) yield 30,240 unique fake news and 144 real news configurations per language.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-centered" style="margin-top: 2rem;">
+      <div class="column is-full">
+        <h3 class="title is-4">mPURIFY: Multilingual Quality Filtering</h3>
+        <div class="content has-text-justified">
+          <p>
+            To ensure dataset integrity, all generated samples pass through <strong>mPURIFY</strong>, a comprehensive quality filtering pipeline employing <strong>32 features across 5 dimensions</strong>:
+          </p>
+        </div>
+
+        <div class="has-text-centered" style="margin: 2rem 0;">
+          <img src="static/images/mPURiFY_overview.png" alt="mPURIFY quality filtering pipeline overview" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);"/>
+          <p class="is-size-7 has-text-centered" style="margin-top: 0.5rem; color: #64748b;">
+            <strong>mPURIFY Overview.</strong> Five quality dimensions &mdash; consistency, validation, translation, hallucination, and defective content detection &mdash; with standard AEM and LLM-AEM evaluation modes.
+          </p>
+        </div>
+
+        <div class="content">
+          <table class="table is-bordered is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Dimension</th>
+                <th>Features</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Consistency</strong></td>
+                <td>8</td>
+                <td>Cross-field semantic coherence, veracity-content alignment</td>
+              </tr>
+              <tr>
+                <td><strong>Validation</strong></td>
+                <td>6</td>
+                <td>Structural completeness, format compliance, field presence</td>
+              </tr>
+              <tr>
+                <td><strong>Translation</strong></td>
+                <td>8</td>
+                <td>Language verification, script validation, translation fidelity</td>
+              </tr>
+              <tr>
+                <td><strong>Hallucination</strong></td>
+                <td>5</td>
+                <td>Factual grounding, source faithfulness, fabrication detection</td>
+              </tr>
+              <tr>
+                <td><strong>Defective</strong></td>
+                <td>5</td>
+                <td>Encoding issues, truncation, repetition, formatting errors</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p class="has-text-centered" style="margin-top: 1rem;">
+            <strong>Filtering results:</strong> 181,966 initial samples &rarr; 87,211 defect-free &rarr; <strong>78,443 retained</strong> (43.1% retention rate) &rarr; 313,772 total text instances
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Methodology -->
+
+
+<!-- Data Collection -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Data Collection</h2>
+
+    <div class="columns is-centered">
+      <div class="column is-full">
+        <h3 class="title is-4">Human-Written Text (HWT) Collection</h3>
+        <div class="content has-text-justified">
+          <p>
+            Human-written content is sourced from <strong>IFCN-certified fact-checking organizations</strong> worldwide, ensuring editorial quality and veracity labels grounded in professional journalism standards. A custom web scraping pipeline collects articles in their original languages, preserving linguistic authenticity.
+          </p>
+        </div>
+        <div class="has-text-centered" style="margin: 1.5rem 0;">
+          <img src="static/images/bluff_webscrapper_overview.jpg" alt="Web scraping pipeline for human-written text collection" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);"/>
+          <p class="is-size-7 has-text-centered" style="margin-top: 0.5rem; color: #64748b;">
+            <strong>Web Scraping Pipeline.</strong> Automated collection from IFCN-certified fact-checkers with source reputation filtering via the Iffy Index.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-centered" style="margin-top: 1rem;">
+      <div class="column is-full">
+        <h3 class="title is-4">Source Corpora for Generation</h3>
+        <div class="content">
+          <table class="table is-bordered is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Source Dataset</th>
+                <th>Articles</th>
+                <th>Type</th>
+                <th>Languages</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Global News Dataset</td>
+                <td>~82,000</td>
+                <td>Multilingual news</td>
+                <td>Multiple</td>
+              </tr>
+              <tr>
+                <td>CNN/Daily Mail</td>
+                <td>~82,000</td>
+                <td>English news with summaries</td>
+                <td>English</td>
+              </tr>
+              <tr>
+                <td>MassiveSumm</td>
+                <td>~51,000</td>
+                <td>Multilingual summaries</td>
+                <td>Multiple</td>
+              </tr>
+              <tr>
+                <td>Visual News</td>
+                <td>~82,000</td>
+                <td>Multimodal news</td>
+                <td>English</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td><strong>Total</strong></td>
+                <td><strong>297,000+</strong></td>
+                <td colspan="2">Seed articles for generation</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Data Collection -->
+
+
 <!-- Benchmark Tasks -->
 <section class="section hero is-light">
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Benchmark Tasks</h2>
+    <div class="content has-text-justified" style="margin-bottom: 2rem;">
+      <p>
+        BLUFF supports four complementary tasks spanning veracity classification and authorship detection, each evaluated using Macro-F1 to account for class imbalance across languages:
+      </p>
+    </div>
     <div class="content">
       <table class="table is-bordered is-striped is-fullwidth">
         <thead>
@@ -347,63 +522,137 @@
           </tr>
         </tbody>
       </table>
+      <p class="is-size-7">
+        <strong>Content types:</strong> HWT = Human-Written Text, MGT = Machine-Generated Text, MTT = Machine-Translated Text, HAT = Human-Adapted Text
+      </p>
     </div>
   </div>
 </section>
 <!-- End Benchmark Tasks -->
 
 
-<!-- Image carousel for figures -->
+<!-- Results Figures Carousel -->
 <section class="hero is-small">
   <div class="hero-body">
     <div class="container">
-      <h2 class="title is-3 has-text-centered">Figures</h2>
+      <h2 class="title is-3 has-text-centered">Key Results</h2>
       <div id="results-carousel" class="carousel results-carousel">
        <div class="item">
-        <!-- Replace with actual figures when PNGs are ready -->
-        <img src="static/images/carousel1.jpg" alt="Language distribution across BLUFF" loading="lazy"/>
+        <img src="static/images/fig_transfer_heatmaps_combined.png" alt="Cross-lingual transfer heatmaps" loading="lazy"/>
         <h2 class="subtitle has-text-centered">
-          Language distribution and resource categorization across BLUFF.
+          Cross-lingual transfer heatmaps showing performance variation across language pairs, revealing significant gaps between high-resource and low-resource languages.
         </h2>
       </div>
       <div class="item">
-        <img src="static/images/carousel2.jpg" alt="AXL-CoI Framework" loading="lazy"/>
+        <img src="static/images/fig_transfer_family.png" alt="Transfer performance by language family" loading="lazy"/>
         <h2 class="subtitle has-text-centered">
-          AXL-CoI: Adversarial Cross-Lingual Agentic Chain-of-Interactions framework.
+          Cross-lingual transfer performance grouped by language family, demonstrating the impact of linguistic relatedness on detection accuracy.
         </h2>
       </div>
       <div class="item">
-        <img src="static/images/carousel3.jpg" alt="Cross-lingual transfer results" loading="lazy"/>
+        <img src="static/images/fig_transfer_script.png" alt="Transfer performance by script type" loading="lazy"/>
         <h2 class="subtitle has-text-centered">
-          Cross-lingual transfer performance: big-head vs. long-tail languages.
+          Transfer performance by script type, highlighting how shared writing systems facilitate knowledge transfer across languages.
         </h2>
       </div>
       <div class="item">
-        <img src="static/images/carousel4.jpg" alt="mPURIFY quality pipeline" loading="lazy"/>
+        <img src="static/images/fig_transfer_syntax.png" alt="Transfer performance by syntactic typology" loading="lazy"/>
         <h2 class="subtitle has-text-centered">
-          mPURIFY quality filtering pipeline overview.
+          Transfer performance across syntactic typologies (SOV, SVO, VSO, VOS), revealing structural influences on cross-lingual generalization.
+        </h2>
+      </div>
+      <div class="item">
+        <img src="static/images/fig_veracity_family.png" alt="Veracity classification by language family" loading="lazy"/>
+        <h2 class="subtitle has-text-centered">
+          Veracity classification performance across language families, showing consistent 9&ndash;25% performance gaps between big-head and long-tail languages.
+        </h2>
+      </div>
+      <div class="item">
+        <img src="static/images/fig_authorship_script.png" alt="Authorship detection by script" loading="lazy"/>
+        <h2 class="subtitle has-text-centered">
+          Authorship detection performance across different script types, revealing varying difficulty levels for machine-generated text detection.
+        </h2>
+      </div>
+      <div class="item">
+        <img src="static/images/mPURiFY_removal_analysis.png" alt="mPURIFY filtering analysis" loading="lazy"/>
+        <h2 class="subtitle has-text-centered">
+          mPURIFY quality filtering analysis showing the distribution of defect types and removal rates across the 5 quality dimensions.
+        </h2>
+      </div>
+      <div class="item">
+        <img src="static/images/mPURiFY_threshold.png" alt="mPURIFY threshold calibration" loading="lazy"/>
+        <h2 class="subtitle has-text-centered">
+          LLM-AEM threshold calibration across quality dimensions, balancing precision and recall for optimal sample retention.
         </h2>
       </div>
     </div>
   </div>
 </div>
 </section>
-<!-- End image carousel -->
+<!-- End Results Figures Carousel -->
+
+
+<!-- Result Tables Carousel -->
+<section class="hero is-small is-light">
+  <div class="hero-body">
+    <div class="container">
+      <h2 class="title is-3 has-text-centered">Result Tables</h2>
+      <div id="tables-carousel" class="carousel results-carousel">
+       <div class="item">
+        <img src="static/images/table1_multilingual_datasets.png" alt="Comparison with existing multilingual datasets" loading="lazy"/>
+        <h2 class="subtitle has-text-centered">
+          Comparison with existing multilingual fake news datasets. BLUFF provides the broadest language coverage (78 languages) and largest scale (201K+ samples).
+        </h2>
+      </div>
+      <div class="item">
+        <img src="static/images/table4_veracity_binary.png" alt="Binary veracity classification results" loading="lazy"/>
+        <h2 class="subtitle has-text-centered">
+          Binary veracity classification (Task 1) results across 5 encoder models and 6 training settings. S-BERT (LaBSE) achieves the best overall performance.
+        </h2>
+      </div>
+      <div class="item">
+        <img src="static/images/table6_authorship_binary.png" alt="Binary authorship detection results" loading="lazy"/>
+        <h2 class="subtitle has-text-centered">
+          Binary authorship detection (Task 3) results showing human vs. machine classification accuracy across encoders and training settings.
+        </h2>
+      </div>
+      <div class="item">
+        <img src="static/images/table8_external_eval.png" alt="External evaluation results" loading="lazy"/>
+        <h2 class="subtitle has-text-centered">
+          External evaluation: Models trained on BLUFF tested on independent datasets, demonstrating strong generalization capabilities.
+        </h2>
+      </div>
+      <div class="item">
+        <img src="static/images/table_source_inventory.png" alt="Source corpora inventory" loading="lazy"/>
+        <h2 class="subtitle has-text-centered">
+          Complete inventory of source corpora used for generation, showing the distribution across datasets, languages, and generation models.
+        </h2>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+<!-- End Result Tables Carousel -->
 
 
 <!-- Leaderboard -->
-<section class="section hero is-light">
+<section class="section">
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Leaderboard (Multilingual Setting)</h2>
+    <div class="content has-text-justified" style="margin-bottom: 1.5rem;">
+      <p>
+        Top encoder model performance in the multilingual training setting, where models are trained and evaluated on all 78 languages simultaneously:
+      </p>
+    </div>
     <div class="content">
       <table class="table is-bordered is-striped is-fullwidth">
         <thead>
           <tr>
             <th>Rank</th>
             <th>Model</th>
-            <th>Task 1 (F1)</th>
-            <th>Task 3 (F1)</th>
-            <th>Task 4 (F1)</th>
+            <th>Task 1: Veracity (F1)</th>
+            <th>Task 3: Authorship (F1)</th>
+            <th>Task 4: Attribution (F1)</th>
           </tr>
         </thead>
         <tbody>
@@ -430,18 +679,90 @@
           </tr>
         </tbody>
       </table>
-      <p class="is-size-7">*Big-head only. See <a href="https://github.com/jsl5710/BLUFF/blob/main/docs/RESULTS.md">full results</a> for comprehensive breakdown by language, family, script, and syntax.</p>
+      <p class="is-size-7">
+        *Big-head languages only. Full results including per-language breakdown, cross-lingual transfer, and decoder model evaluation are available in the
+        <a href="https://github.com/jsl5710/BLUFF" target="_blank">GitHub repository</a>.
+      </p>
+    </div>
+
+    <!-- Cross-lingual transfer figures -->
+    <div class="columns is-multiline" style="margin-top: 2rem;">
+      <div class="column is-6">
+        <div class="box">
+          <img src="static/images/fig_family_transfer_10models.png" alt="Cross-lingual transfer by language family (10 models)" loading="lazy" style="width: 100%; border-radius: 8px;"/>
+          <p class="is-size-7 has-text-centered" style="margin-top: 0.5rem;">Transfer by language family (10 models)</p>
+        </div>
+      </div>
+      <div class="column is-6">
+        <div class="box">
+          <img src="static/images/fig_script_transfer_10models.png" alt="Cross-lingual transfer by script type (10 models)" loading="lazy" style="width: 100%; border-radius: 8px;"/>
+          <p class="is-size-7 has-text-centered" style="margin-top: 0.5rem;">Transfer by script type (10 models)</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 <!-- End Leaderboard -->
 
 
+<!-- LLM Generation Models -->
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered">Generation Models</h2>
+    <div class="content has-text-justified" style="margin-bottom: 1.5rem;">
+      <p>BLUFF leverages <strong>19 frontier multilingual LLMs</strong> spanning both instruction-tuned and reasoning-focused architectures:</p>
+    </div>
+    <div class="content">
+      <div class="columns">
+        <div class="column is-6">
+          <h4 class="title is-5">Instruction-Tuned LLMs (13)</h4>
+          <ul>
+            <li>GPT-4o, GPT-4o-mini</li>
+            <li>Claude 3.5 Sonnet, Claude 3.5 Haiku</li>
+            <li>Gemini 2.0 Flash</li>
+            <li>Llama 3.1 (8B, 70B), Llama 3.3 70B</li>
+            <li>Qwen 2.5 (7B, 72B)</li>
+            <li>Aya Expanse (8B, 32B)</li>
+            <li>Mistral Small 24B</li>
+          </ul>
+        </div>
+        <div class="column is-6">
+          <h4 class="title is-5">Reasoning LRMs (6)</h4>
+          <ul>
+            <li>o3-mini</li>
+            <li>DeepSeek R1</li>
+            <li>DeepSeek R1 Distill (Qwen 32B, Llama 70B)</li>
+            <li>QwQ 32B</li>
+            <li>Gemini 2.0 Flash Thinking</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End LLM Generation Models -->
+
+
 <!--BibTex citation -->
   <section class="section" id="BibTeX">
     <div class="container is-max-desktop content">
       <h2 class="title">Citation</h2>
-      <p>Paper currently under review. Citation will be provided upon acceptance.</p>
+      <p>Paper currently under review at KDD 2026 (Datasets and Benchmarks Track). Citation will be provided upon acceptance.</p>
+      <!--
+      <div class="bibtex-header">
+        <h2 class="title is-4" style="margin-bottom: 0;">BibTeX</h2>
+        <button class="copy-bibtex-btn" onclick="copyBibTeX()">
+          <i class="fas fa-copy"></i>
+          <span class="copy-text">Copy</span>
+        </button>
+      </div>
+      <pre><code id="bibtex-code">@inproceedings{lucas2026bluff,
+  title={BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news},
+  author={Lucas, Jason and Lee, Dongwon},
+  booktitle={Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining},
+  year={2026}
+}</code></pre>
+      -->
     </div>
 </section>
 <!--End BibTex citation -->
