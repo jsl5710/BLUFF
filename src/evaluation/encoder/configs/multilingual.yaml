@@ -1,0 +1,16 @@
+# Multilingual training configuration
+# Train on stratified multilingual sample, evaluate on all 78 languages
+
+experiment_type: multilingual
+description: "Train on all languages, evaluate big-head vs long-tail performance"
+
+training:
+  sampling_strategy: linguistically_informed  # vs random
+  languages: all
+  stratify_by: [language, veracity_label]
+  max_samples_per_language: null
+
+evaluation:
+  splits: [dev, test]
+  group_by: [language, resource_category, language_family, script, syntax]
+  metrics: [f1_macro, f1_weighted, accuracy]

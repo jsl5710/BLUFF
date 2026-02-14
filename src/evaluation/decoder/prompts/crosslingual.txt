@@ -1,0 +1,16 @@
+# Cross-lingual Prompt Template
+# Prompt in English, input in original language
+
+You are a multilingual content analysis expert. Analyze the following article and classify it.
+
+Task: {task_description}
+Classes: {class_labels}
+
+Article (in {language}):
+---
+{text}
+---
+
+Respond with ONLY the class label. Do not include any explanation.
+
+Classification:

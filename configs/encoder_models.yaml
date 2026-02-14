@@ -1,0 +1,91 @@
+# Encoder Model Configurations for BLUFF Benchmark
+
+models:
+  mbert:
+    name: "bert-base-multilingual-cased"
+    type: encoder
+    parameters: 110M
+    languages: 104
+    max_length: 512
+    batch_size: 32
+    learning_rate: 2e-5
+    epochs: 5
+    warmup_ratio: 0.1
+
+  xlmr_base:
+    name: "xlm-roberta-base"
+    type: encoder
+    parameters: 270M
+    languages: 100
+    max_length: 512
+    batch_size: 32
+    learning_rate: 2e-5
+    epochs: 5
+    warmup_ratio: 0.1
+
+  xlmr_large:
+    name: "xlm-roberta-large"
+    type: encoder
+    parameters: 550M
+    languages: 100
+    max_length: 512
+    batch_size: 16
+    learning_rate: 1e-5
+    epochs: 5
+    warmup_ratio: 0.1
+
+  mdeberta_base:
+    name: "microsoft/mdeberta-v3-base"
+    type: encoder
+    parameters: 86M
+    languages: 100
+    max_length: 512
+    batch_size: 32
+    learning_rate: 2e-5
+    epochs: 5
+    warmup_ratio: 0.1
+
+  glot500:
+    name: "cis-lmu/glot500-base"
+    type: encoder
+    parameters: 395M
+    languages: 511
+    max_length: 512
+    batch_size: 32
+    learning_rate: 2e-5
+    epochs: 5
+    warmup_ratio: 0.1
+
+# Experiment configurations
+experiments:
+  multilingual:
+    description: "Train on all languages, evaluate head vs. tail"
+    train_languages: all
+    eval_split_by: [resource_category]
+    metrics: [f1_macro, precision, recall, accuracy]
+
+  crosslingual:
+    description: "Train on subset, evaluate cross-lingual transfer"
+    eval_dimensions:
+      - head_tail        # Big-head vs. Long-tail
+      - language_family   # Per language family
+      - syntax            # Per syntactic typology
+      - script_type       # Per script type
+    metrics: [f1_macro, precision, recall]
+
+  external:
+    description: "Evaluate on external held-out datasets"
+    train_languages: all
+    eval_split_by: [resource_category]
+    metrics: [f1_macro, precision, recall]
+
+# Training defaults
+training:
+  seed: 42
+  fp16: true
+  gradient_accumulation_steps: 2
+  weight_decay: 0.01
+  evaluation_strategy: epoch
+  save_strategy: epoch
+  load_best_model_at_end: true
+  metric_for_best_model: f1_macro

@@ -1,0 +1,16 @@
+# English-Translated Prompt Template
+# Both prompt and input in English (article machine-translated to English)
+
+You are a content analysis expert. Analyze the following article and classify it.
+
+Task: {task_description}
+Classes: {class_labels}
+
+Article (translated to English from {original_language}):
+---
+{translated_text}
+---
+
+Respond with ONLY the class label. Do not include any explanation.
+
+Classification:

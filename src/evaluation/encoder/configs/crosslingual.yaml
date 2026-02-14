@@ -1,0 +1,16 @@
+# Cross-lingual training configuration
+# Train on English only, evaluate zero-shot transfer to all 78 languages
+
+experiment_type: crosslingual
+description: "Train on English, evaluate zero-shot cross-lingual transfer"
+
+training:
+  languages: [en]
+  stratify_by: [veracity_label]
+
+evaluation:
+  splits: [dev, test]
+  group_by: [language, resource_category, language_family, script, syntax]
+  metrics: [f1_macro, f1_weighted, accuracy]
+  transfer_analysis:
+    dimensions: [script, syntax, family]

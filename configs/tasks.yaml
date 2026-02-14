@@ -1,0 +1,50 @@
+# BLUFF Benchmark Task Definitions
+
+tasks:
+  task1_veracity_binary:
+    name: "Binary Veracity Classification"
+    description: "Classify articles as real or fake"
+    labels: ["real", "fake"]
+    num_labels: 2
+    metric: f1_macro
+    label_field: veracity_label
+
+  task2_veracity_multiclass:
+    name: "Multi-class Veracity Classification"
+    description: "Classify articles by veracity and source type"
+    labels: ["real_hwt", "fake_hwt", "real_mgt", "fake_mgt"]
+    num_labels: 4
+    metric: f1_macro
+    label_field: veracity_label
+
+  task3_authorship_binary:
+    name: "Binary Authorship Detection"
+    description: "Determine if text is human-written or machine-generated"
+    labels: ["human", "machine"]
+    num_labels: 2
+    metric: f1_macro
+    label_field: authorship_type
+
+  task4_authorship_multiclass:
+    name: "Multi-class Authorship Attribution"
+    description: "Classify text by authorship type"
+    labels: ["HWT", "MGT", "MTT", "HAT"]
+    num_labels: 4
+    metric: f1_macro
+    label_field: authorship_type
+
+# Evaluation protocol
+evaluation:
+  primary_metric: f1_macro
+  additional_metrics: [precision_macro, recall_macro, accuracy]
+  disaggregation_dimensions:
+    - resource_category
+    - language_family
+    - script_type
+    - syntax_type
+    - per_language
+  splits:
+    train: ~70%
+    dev: ~15%
+    test: ~15%
+  stratification: [language, label]

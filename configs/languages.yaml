@@ -1,0 +1,91 @@
+# BLUFF Language Taxonomy
+# 78 languages: 20 big-head + 58 long-tail
+
+resource_categories:
+  big_head:
+    description: "High-resource languages with substantial NLP resources and LLM training data"
+    count: 20
+    languages: [ar, bn, de, en, es, fa, fr, hi, id, it, ja, ko, nl, pl, pt, ru, sv, tr, uk, zh]
+  long_tail:
+    description: "Low-resource languages with limited NLP resources"
+    count: 58
+    languages: [af, am, az, bg, ca, ceb, cs, cy, da, el, et, eu, fi, ga, gl, gu, ha, he, hr, hu,
+                hy, is, ka, kk, km, kn, ku, ky, lo, lt, lv, mk, ml, mr, ms, mt, my, ne, no, pa,
+                ps, ro, si, sk, sl, sq, sr, sw, ta, te, tg, th, tl, ur, uz, vi, xh, yo]
+
+language_families:
+  Indo-European:
+    languages: [en, de, fr, es, pt, it, nl, sv, da, no, pl, cs, sk, hr, sr, bg, mk, sl, uk, ru,
+                ro, sq, el, lt, lv, is, ga, cy, ca, gl, af, hi, bn, ur, gu, mr, pa, ne, si, fa,
+                ku, ps, hy, tg]
+  Sino-Tibetan:
+    languages: [zh, my]
+  Afro-Asiatic:
+    languages: [ar, he, ha, am]
+  Niger-Congo:
+    languages: [sw, yo, xh]
+  Austronesian:
+    languages: [id, ms, tl, ceb, mt]
+  Dravidian:
+    languages: [ta, te, kn, ml]
+  Turkic:
+    languages: [tr, az, kk, ky, uz]
+  Uralic:
+    languages: [fi, hu, et]
+  Koreanic:
+    languages: [ko]
+  Japonic:
+    languages: [ja]
+  Tai-Kadai:
+    languages: [th, lo]
+  Austroasiatic:
+    languages: [vi, km]
+  Language Isolate:
+    languages: [eu, ka]
+
+script_types:
+  Latin:
+    languages: [en, de, fr, es, pt, it, nl, sv, da, no, pl, cs, sk, hr, sl, ro, sq, lt, lv, is,
+                ga, cy, ca, gl, af, id, ms, tl, ceb, mt, tr, az, uz, sw, yo, xh, ha, fi, hu, et,
+                eu, vi, ku]
+  Cyrillic:
+    languages: [ru, uk, bg, mk, sr, kk, ky, tg]
+  Arabic:
+    languages: [ar, fa, ur, ps]
+  Devanagari:
+    languages: [hi, mr, ne]
+  CJK:
+    languages: [zh, ja, ko]
+  Thai:
+    languages: [th, lo]
+  Ethiopic:
+    languages: [am]
+  Khmer:
+    languages: [km]
+  Bengali:
+    languages: [bn]
+  Georgian:
+    languages: [ka]
+  Armenian:
+    languages: [hy]
+  Tamil:
+    languages: [ta]
+  Other_Indic:
+    languages: [gu, pa, si, kn, ml, te, my]
+
+syntax_types:
+  SVO:
+    description: "Subject-Verb-Object"
+    languages: [en, de, fr, es, pt, it, nl, sv, da, no, pl, cs, sk, hr, sr, bg, mk, sl, uk, ru,
+                ro, sq, el, lt, lv, is, ga, af, ca, gl, id, ms, tl, ceb, sw, yo, xh, ha, fi, hu,
+                et, eu, vi, zh, th, lo, km, my]
+  SOV:
+    description: "Subject-Object-Verb"
+    languages: [hi, bn, ur, gu, mr, pa, ne, si, fa, ku, ps, ta, te, kn, ml, hy, tg, tr, az, kk,
+                ky, uz, ja, ko, ka]
+  VSO:
+    description: "Verb-Subject-Object"
+    languages: [ar, he, ga, cy]
+  VOS:
+    description: "Verb-Object-Subject"
+    languages: [mt]

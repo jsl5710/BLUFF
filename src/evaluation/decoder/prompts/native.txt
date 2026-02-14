@@ -1,0 +1,15 @@
+# Native Prompt Template
+# Both prompt and input in the target language
+# This template is translated to the target language before use
+
+{native_prompt_prefix}
+
+{task_description_native}
+{class_labels_native}
+
+{article_label_native}:
+---
+{text}
+---
+
+{response_instruction_native}

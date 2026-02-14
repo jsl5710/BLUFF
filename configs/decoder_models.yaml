@@ -1,0 +1,70 @@
+# Decoder Model Configurations for BLUFF Benchmark
+
+models:
+  gpt4o:
+    name: "gpt-4o"
+    provider: openai
+    max_tokens: 256
+    temperature: 0.0
+
+  gpt4o_mini:
+    name: "gpt-4o-mini"
+    provider: openai
+    max_tokens: 256
+    temperature: 0.0
+
+  claude_sonnet:
+    name: "claude-sonnet-4-20250514"
+    provider: anthropic
+    max_tokens: 256
+    temperature: 0.0
+
+  gemini_pro:
+    name: "gemini-1.5-pro"
+    provider: google
+    max_tokens: 256
+    temperature: 0.0
+
+  llama3_70b:
+    name: "meta-llama/Llama-3.1-70B-Instruct"
+    provider: huggingface
+    max_tokens: 256
+    temperature: 0.0
+
+  qwen2_72b:
+    name: "Qwen/Qwen2.5-72B-Instruct"
+    provider: huggingface
+    max_tokens: 256
+    temperature: 0.0
+
+  aya_expanse:
+    name: "CohereForAI/aya-expanse-32b"
+    provider: huggingface
+    max_tokens: 256
+    temperature: 0.0
+
+# Prompt regimens
+prompt_types:
+  crosslingual:
+    description: "Prompt in English, input in original language"
+    prompt_language: en
+    input_language: original
+
+  native:
+    description: "Prompt and input in target language"
+    prompt_language: target
+    input_language: original
+
+  english_translated:
+    description: "Both prompt and input in English (translated)"
+    prompt_language: en
+    input_language: en_translated
+
+# Inference defaults
+inference:
+  batch_size: 1
+  max_retries: 3
+  retry_delay: 5
+  rate_limit_delay: 1
+  timeout: 60
+  num_samples: -1  # -1 for all
