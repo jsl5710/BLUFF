@@ -155,33 +155,53 @@ pip install -r requirements.txt
 ### Download Dataset
 
 ```bash
-# Option 1: Direct download script
+# Option 1: Download everything (~3.9 GB)
 bash scripts/download_data.sh
 
-# Option 2: HuggingFace Datasets
+# Option 2: Download specific subsets
+bash scripts/download_data.sh --subset splits      # Only split definitions
+bash scripts/download_data.sh --subset meta_data   # Only metadata CSVs
+bash scripts/download_data.sh --subset processed   # Cleaned text data
+
+# Option 3: Python API
 python -c "
-from datasets import load_dataset
-dataset = load_dataset('jsl5710/BLUFF', 'task1_veracity_binary')
-print(dataset)
+from huggingface_hub import snapshot_download
+snapshot_download(repo_id='jsl5710/BLUFF', repo_type='dataset', local_dir='./data')
 "
 ```
+
+The dataset on HuggingFace is organized as:
+- `data/meta_data/` — Metadata CSVs (`metadata_human_written.csv`, `metadata_ai_generated.csv`)
+- `data/processed/` — Cleaned text data organized by model and language
+- `data/raw/` — Original source data from fact-checking organizations
+- `data/splits/` — Train/val split definitions (JSON files with sample UUIDs)
+
+> **Note:** Test splits are held out to preserve benchmark integrity. Contact the authors for test set evaluation.
+
+See the [HuggingFace dataset page](https://huggingface.co/datasets/jsl5710/BLUFF) for detailed field descriptions and usage examples.
 
 ### Run Evaluation
 
 ```bash
-# Encoder-based evaluation (e.g., XLM-RoBERTa)
-python src/evaluation/encoder/evaluate.py \
+# Encoder-based training (e.g., XLM-RoBERTa)
+python src/evaluation/encoder/train.py \
     --model xlm-roberta-large \
     --task task1_veracity_binary \
-    --split test \
-    --languages all
+    --experiment multilingual \
+    --data_dir data
 
-# Decoder-based evaluation (e.g., GPT-4o)
+# Encoder-based evaluation
+python src/evaluation/encoder/evaluate.py \
+    --model outputs/encoder/task1_veracity_binary/multilingual/xlm-roberta-large/best_model \
+    --task task1_veracity_binary \
+    --data_dir data
+
+# Decoder-based inference (e.g., GPT-4o)
 python src/evaluation/decoder/inference.py \
-    --model gpt-4o \
+    --model gpt4o \
     --task task1_veracity_binary \
     --prompt_type crosslingual \
-    --split test
+    --data_dir data
 ```
 
 ---
@@ -241,27 +261,31 @@ python src/evaluation/decoder/inference.py \
 
 ## 📋 Data Format
 
-Each sample in BLUFF contains the following fields:
+### Processed Text Data (`data/processed/generated_data/`)
 
-```json
-{
-    "id": "BLUFF-EN-001234",
-    "text": "Article text content...",
-    "language": "en",
-    "language_family": "Indo-European",
-    "script": "Latin",
-    "syntax": "SVO",
-    "resource_category": "big-head",
-    "veracity_label": "fake",
-    "authorship_type": "MGT",
-    "generation_model": "gpt-4o",
-    "manipulation_tactic": "emotional_amplification",
-    "edit_intensity": "high",
-    "source": "PolitiFact",
-    "source_filepath": "\\BLUFF_Main\\source_data\\...",
-    "split": "train"
-}
-```
+Each processed CSV file contains cleaned, model-ready text data:
+
+| Field | Description |
+|-------|-------------|
+| `uuid` | Unique sample identifier (links to metadata and splits) |
+| `article_content` | Full article text in the original language |
+| `translated_content` | English translation of the article |
+| `post_content` | Social media post version in the original language |
+| `translated_post` | English translation of the post |
+| `language` | ISO 639-3 language code |
+| `model` | Generating model name |
+| `veracity` | `fake_news` or `real_news` |
+| `technique_keys` | Manipulation technique IDs applied |
+| `degree` | Edit intensity (`minor`, `moderate`, `critical`) |
+| `HAT` / `MGT` / `MTT` / `HWT` | Content type flags (`y`/`n`) |
+
+### Split Files (`data/splits/evaluation/`)
+
+Each split directory contains `train.json` and `val.json` — lists of UUIDs that map to samples in the metadata and processed data. Use these to construct train/val datasets for each experimental setting.
+
+### Metadata (`data/meta_data/`)
+
+Rich per-sample metadata including quality filtering (mPURIFY) results, source information, language classification, and generation details.
 
 ---
 

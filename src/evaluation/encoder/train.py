@@ -7,19 +7,22 @@ Usage:
         --model xlm-roberta-large \
         --task task1_veracity_binary \
         --experiment multilingual \
-        --config configs/encoder_models.yaml
+        --config configs/encoder_models.yaml \
+        --data_dir data
 """
 
 import argparse
 import json
 import os
 import logging
+import glob
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import torch
 import yaml
-from datasets import load_dataset, DatasetDict
+from datasets import Dataset, DatasetDict
 from sklearn.metrics import f1_score, precision_score, recall_score, accuracy_score
 from transformers import (
     AutoTokenizer,
@@ -67,6 +70,97 @@ def filter_by_languages(dataset, languages, lang_field="language"):
     return dataset.filter(lambda x: x[lang_field] in languages)
 
 
+def load_split_uuids(split_dir: str, split_name: str) -> set:
+    """Load UUIDs from a split JSON file."""
+    split_path = os.path.join(split_dir, f"{split_name}.json")
+    if not os.path.exists(split_path):
+        raise FileNotFoundError(f"Split file not found: {split_path}")
+    with open(split_path, "r") as f:
+        return set(json.load(f))
+
+
+def load_bluff_data(data_dir: str, split_dir: str, task: str, labels_map: dict):
+    """
+    Load BLUFF data from local files.
+
+    Args:
+        data_dir: Root data directory (containing meta_data/, processed/, splits/)
+        split_dir: Path to the specific split directory (e.g., data/splits/evaluation/multilingual)
+        task: Task name for label mapping
+        labels_map: Dict mapping label strings to integers
+
+    Returns:
+        DatasetDict with 'train' and 'validation' splits
+    """
+    # Load metadata
+    meta_ai_path = os.path.join(data_dir, "meta_data", "metadata_ai_generated.csv")
+    meta_hw_path = os.path.join(data_dir, "meta_data", "metadata_human_written.csv")
+
+    logger.info("Loading metadata...")
+    meta_ai = pd.read_csv(meta_ai_path, low_memory=False)
+    meta_hw = pd.read_csv(meta_hw_path, low_memory=False)
+
+    # Load processed text data
+    logger.info("Loading processed text data...")
+    processed_dir = os.path.join(data_dir, "processed", "generated_data")
+    text_dfs = []
+
+    for csv_path in glob.glob(os.path.join(processed_dir, "**", "data.csv"), recursive=True):
+        df = pd.read_csv(csv_path, low_memory=False)
+        text_dfs.append(df)
+
+    if not text_dfs:
+        raise FileNotFoundError(f"No data.csv files found in {processed_dir}")
+
+    text_data = pd.concat(text_dfs, ignore_index=True)
+    logger.info(f"Loaded {len(text_data)} text samples from processed data")
+
+    # Build datasets for each split
+    datasets = {}
+    for split_name, hf_split_name in [("train", "train"), ("val", "validation")]:
+        try:
+            uuids = load_split_uuids(split_dir, split_name)
+        except FileNotFoundError:
+            logger.warning(f"Split '{split_name}' not found in {split_dir}, skipping")
+            continue
+
+        # Filter text data by UUIDs
+        split_text = text_data[text_data["uuid"].isin(uuids)].copy()
+
+        # Determine text and label columns based on task
+        if "veracity" in task:
+            split_text["text"] = split_text["article_content"].fillna(split_text["post_content"])
+            split_text["label_str"] = split_text["veracity"].map(
+                lambda v: "fake" if "fake" in str(v).lower() else "real"
+            )
+        else:  # authorship tasks
+            split_text["text"] = split_text["article_content"].fillna(split_text["post_content"])
+            # Determine authorship type from flags
+            def get_authorship(row):
+                if str(row.get("HWT", "")).lower() == "y":
+                    return "HWT" if "multiclass" in task else "human"
+                elif str(row.get("MGT", "")).lower() == "y":
+                    return "MGT" if "multiclass" in task else "machine"
+                elif str(row.get("MTT", "")).lower() == "y":
+                    return "MTT" if "multiclass" in task else "machine"
+                elif str(row.get("HAT", "")).lower() == "y":
+                    return "HAT" if "multiclass" in task else "machine"
+                return "human"
+            split_text["label_str"] = split_text.apply(get_authorship, axis=1)
+
+        # Map labels to integers
+        split_text["label"] = split_text["label_str"].map(labels_map)
+        split_text = split_text.dropna(subset=["text", "label"])
+        split_text["label"] = split_text["label"].astype(int)
+
+        # Create HF Dataset
+        ds = Dataset.from_pandas(split_text[["uuid", "text", "language", "label"]].reset_index(drop=True))
+        datasets[hf_split_name] = ds
+        logger.info(f"  {hf_split_name}: {len(ds)} samples")
+
+    return DatasetDict(datasets)
+
+
 def main():
     parser = argparse.ArgumentParser(description="BLUFF Encoder Training")
     parser.add_argument("--model", type=str, required=True, help="Model name or path")
@@ -75,7 +169,10 @@ def main():
                         choices=["multilingual", "crosslingual", "external"])
     parser.add_argument("--config", type=str, default="configs/encoder_models.yaml")
     parser.add_argument("--output_dir", type=str, default="outputs/encoder")
-    parser.add_argument("--data_dir", type=str, default="data/splits")
+    parser.add_argument("--data_dir", type=str, default="data",
+                        help="Root data directory (containing meta_data/, processed/, splits/)")
+    parser.add_argument("--split_name", type=str, default="multilingual",
+                        help="Split setting name (e.g., multilingual, cross_lingual_family/Indo_European)")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max_length", type=int, default=512)
     parser.add_argument("--batch_size", type=int, default=None)
@@ -118,9 +215,11 @@ def main():
     logger.info(f"Task: {args.task} | Model: {model_name} | Experiment: {args.experiment}")
     logger.info(f"Labels: {labels} | Num labels: {num_labels}")
 
-    # Load dataset
-    logger.info("Loading dataset...")
-    dataset = load_dataset("jsl5710/BLUFF", args.task)
+    # Load dataset from local files
+    split_dir = os.path.join(args.data_dir, "splits", "evaluation", args.split_name)
+    logger.info(f"Loading dataset from: {args.data_dir}")
+    logger.info(f"Split directory: {split_dir}")
+    dataset = load_bluff_data(args.data_dir, split_dir, args.task, labels)
 
     # Filter languages if specified
     if args.languages != "all":
@@ -147,7 +246,7 @@ def main():
             padding="max_length",
         )
 
-    tokenized = dataset.map(tokenize_fn, batched=True, remove_columns=["text"])
+    tokenized = dataset.map(tokenize_fn, batched=True, remove_columns=["text", "uuid", "language"])
 
     # Training arguments
     training_args = TrainingArguments(
@@ -178,7 +277,7 @@ def main():
         model=model,
         args=training_args,
         train_dataset=tokenized["train"],
-        eval_dataset=tokenized["dev"] if "dev" in tokenized else tokenized["validation"],
+        eval_dataset=tokenized["validation"],
         compute_metrics=compute_metrics,
         callbacks=[EarlyStoppingCallback(early_stopping_patience=3)],
     )
@@ -188,18 +287,19 @@ def main():
     train_result = trainer.train()
     trainer.save_model(os.path.join(output_dir, "best_model"))
 
-    # Evaluate on test set
-    logger.info("Evaluating on test set...")
-    test_results = trainer.evaluate(tokenized["test"], metric_key_prefix="test")
+    # Evaluate on validation set
+    logger.info("Evaluating on validation set...")
+    val_results = trainer.evaluate(metric_key_prefix="val")
 
     # Save results
     results = {
         "model": model_name,
         "task": args.task,
         "experiment": args.experiment,
+        "split_name": args.split_name,
         "languages": args.languages,
         "train_results": {k: float(v) for k, v in train_result.metrics.items()},
-        "test_results": {k: float(v) for k, v in test_results.items()},
+        "val_results": {k: float(v) for k, v in val_results.items()},
     }
 
     results_path = os.path.join(output_dir, "results.json")
@@ -207,7 +307,7 @@ def main():
         json.dump(results, f, indent=2)
 
     logger.info(f"Results saved to {results_path}")
-    logger.info(f"Test F1 (macro): {test_results.get('test_f1_macro', 'N/A'):.4f}")
+    logger.info(f"Val F1 (macro): {val_results.get('val_f1_macro', 'N/A'):.4f}")
 
 
 if __name__ == "__main__":

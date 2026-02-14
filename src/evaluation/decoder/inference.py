@@ -4,10 +4,11 @@ Evaluates multilingual decoder models with cross-lingual, native, and english-tr
 
 Usage:
     python src/evaluation/decoder/inference.py \
-        --model gpt-4o \
+        --model gpt4o \
         --task task1_veracity_binary \
         --prompt_type crosslingual \
-        --split test \
+        --data_dir data \
+        --split_name multilingual \
         --config configs/decoder_models.yaml
 """
 
@@ -15,11 +16,12 @@ import argparse
 import json
 import os
 import logging
+import glob
 import time
 from pathlib import Path
 
+import pandas as pd
 import yaml
-from datasets import load_dataset
 from tqdm import tqdm
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -163,13 +165,63 @@ def parse_prediction(response_text, task):
             return "HWT"  # fallback
 
 
+def load_eval_data(data_dir, split_dir, split_name, task):
+    """Load evaluation data from local files."""
+
+    # Load split UUIDs
+    split_path = os.path.join(split_dir, f"{split_name}.json")
+    if not os.path.exists(split_path):
+        raise FileNotFoundError(f"Split file not found: {split_path}")
+    with open(split_path, "r") as f:
+        uuids = set(json.load(f))
+
+    # Load processed text data
+    processed_dir = os.path.join(data_dir, "processed", "generated_data")
+    text_dfs = []
+    for csv_path in glob.glob(os.path.join(processed_dir, "**", "data.csv"), recursive=True):
+        df = pd.read_csv(csv_path, low_memory=False)
+        text_dfs.append(df)
+
+    text_data = pd.concat(text_dfs, ignore_index=True)
+    split_text = text_data[text_data["uuid"].isin(uuids)].copy()
+
+    # Build text and labels
+    split_text["text"] = split_text["article_content"].fillna(split_text["post_content"])
+    split_text["text_en"] = split_text["translated_content"].fillna(split_text["translated_post"])
+
+    if "veracity" in task:
+        split_text["label"] = split_text["veracity"].map(
+            lambda v: "fake" if "fake" in str(v).lower() else "real"
+        )
+    else:
+        def get_authorship(row):
+            if str(row.get("HWT", "")).lower() == "y":
+                return "HWT" if "multiclass" in task else "human"
+            elif str(row.get("MGT", "")).lower() == "y":
+                return "MGT" if "multiclass" in task else "machine"
+            elif str(row.get("MTT", "")).lower() == "y":
+                return "MTT" if "multiclass" in task else "machine"
+            elif str(row.get("HAT", "")).lower() == "y":
+                return "HAT" if "multiclass" in task else "machine"
+            return "human"
+        split_text["label"] = split_text.apply(get_authorship, axis=1)
+
+    split_text = split_text.dropna(subset=["text", "label"])
+    return split_text
+
+
 def main():
     parser = argparse.ArgumentParser(description="BLUFF Decoder Inference")
     parser.add_argument("--model", type=str, required=True)
     parser.add_argument("--task", type=str, required=True, choices=list(TASK_PROMPTS.keys()))
     parser.add_argument("--prompt_type", type=str, required=True,
                         choices=["crosslingual", "native", "english_translated"])
-    parser.add_argument("--split", type=str, default="test")
+    parser.add_argument("--split", type=str, default="val",
+                        help="Split to evaluate (train or val)")
+    parser.add_argument("--data_dir", type=str, default="data",
+                        help="Root data directory")
+    parser.add_argument("--split_name", type=str, default="multilingual",
+                        help="Split setting name")
     parser.add_argument("--config", type=str, default="configs/decoder_models.yaml")
     parser.add_argument("--output_dir", type=str, default="outputs/decoder")
     parser.add_argument("--languages", type=str, default="all")
@@ -205,30 +257,31 @@ def main():
     # Load prompts
     prompts = TASK_PROMPTS[args.task][args.prompt_type]
 
-    # Load dataset
-    logger.info(f"Loading dataset: {args.task} [{args.split}]")
-    dataset = load_dataset("jsl5710/BLUFF", args.task, split=args.split)
+    # Load dataset from local files
+    split_dir = os.path.join(args.data_dir, "splits", "evaluation", args.split_name)
+    logger.info(f"Loading data from: {args.data_dir}, split: {args.split}")
+    eval_df = load_eval_data(args.data_dir, split_dir, args.split, args.task)
 
     if args.languages != "all":
         lang_list = args.languages.split(",")
-        dataset = dataset.filter(lambda x: x["language"] in lang_list)
+        eval_df = eval_df[eval_df["language"].isin(lang_list)]
 
     if args.max_samples > 0:
-        dataset = dataset.select(range(min(args.max_samples, len(dataset))))
+        eval_df = eval_df.head(args.max_samples)
 
-    logger.info(f"Evaluating {len(dataset)} samples with {model_name} [{args.prompt_type}]")
+    logger.info(f"Evaluating {len(eval_df)} samples with {model_name} [{args.prompt_type}]")
 
     # Inference
     inference_config = config.get("inference", {})
     results = []
     errors = 0
 
-    for i, example in enumerate(tqdm(dataset, desc="Inference")):
+    for _, row in tqdm(eval_df.iterrows(), total=len(eval_df), desc="Inference"):
         text_field = "text"
-        if args.prompt_type == "english_translated" and "text_en" in example:
+        if args.prompt_type == "english_translated" and pd.notna(row.get("text_en")):
             text_field = "text_en"
 
-        user_prompt = prompts["user"].format(text=example[text_field])
+        user_prompt = prompts["user"].format(text=row[text_field])
 
         for attempt in range(inference_config.get("max_retries", 3)):
             try:
@@ -236,9 +289,9 @@ def main():
                 pred = parse_prediction(response, args.task)
 
                 results.append({
-                    "id": example.get("id", i),
-                    "language": example["language"],
-                    "true_label": example.get("label", example.get("veracity_label", "")),
+                    "uuid": row["uuid"],
+                    "language": row["language"],
+                    "true_label": row["label"],
                     "predicted_label": pred,
                     "raw_response": response,
                 })
@@ -250,9 +303,9 @@ def main():
                 else:
                     errors += 1
                     results.append({
-                        "id": example.get("id", i),
-                        "language": example["language"],
-                        "true_label": example.get("label", ""),
+                        "uuid": row["uuid"],
+                        "language": row["language"],
+                        "true_label": row["label"],
                         "predicted_label": "ERROR",
                         "raw_response": str(e),
                     })
@@ -288,6 +341,7 @@ def main():
         "task": args.task,
         "prompt_type": args.prompt_type,
         "split": args.split,
+        "split_name": args.split_name,
         "metrics": metrics,
     }
 
