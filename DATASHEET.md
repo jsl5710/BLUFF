@@ -10,7 +10,7 @@
 BLUFF was created to address the critical gap in multilingual fake news detection benchmarks. Existing resources are overwhelmingly English-centric or cover only a handful of high-resource languages, leaving low-resource linguistic communities — where disinformation often causes the greatest harm — without robust evaluation tools. BLUFF provides a standardized benchmark spanning 78 languages to enable equitable research in multilingual disinformation detection.
 
 **Who created the dataset and on behalf of which entity?**
-Jason Lucas and Dongwon Lee at the PIKE Research Lab, Penn State University, College of Information Sciences and Technology.
+Jason Lucas, Matt Murtagh-White, Adaku Uchendu, Ali Al-Lawati, Michiharu Yamashita, Dominik Macko, Ivan Srba, Robert Moro, and Dongwon Lee. Affiliations: Penn State University (USA), Trinity College Dublin (Ireland), MIT Lincoln Lab (USA), Visa Research (USA), and KInIT (Slovakia).
 
 **Who funded the creation of the dataset?**
 This work was supported in part by the Penn State College of Information Sciences and Technology.

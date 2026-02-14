@@ -6,6 +6,7 @@
 - **Repository:** [https://github.com/jsl5710/BLUFF](https://github.com/jsl5710/BLUFF)
 - **HuggingFace:** [https://huggingface.co/datasets/jsl5710/BLUFF](https://huggingface.co/datasets/jsl5710/BLUFF)
 - **Paper:** BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news (under review)
+- **Authors:** Jason Lucas, Matt Murtagh-White, Adaku Uchendu, Ali Al-Lawati, Michiharu Yamashita, Dominik Macko, Ivan Srba, Robert Moro, Dongwon Lee
 - **Point of Contact:** Jason Lucas (jsl5710@psu.edu)
 
 ### Dataset Summary

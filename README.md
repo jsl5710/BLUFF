@@ -17,7 +17,7 @@
 **BLUFF** is a comprehensive benchmark for detecting *false* and *synthetic* content, spanning **78 languages** with over **201K samples** and **313K+ text instances**. It uniquely covers both high-resource "big-head" (20) and low-resource "long-tail" (58) languages, combining human-written fact-checked content (122K+ samples across 57 languages) and LLM-generated content (78K+ samples across 71 languages) to address critical gaps in multilingual disinformation research.
 
 > **Paper:** *BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news*
-> **Authors:** Jason Lucas, Dongwon Lee
+> **Authors:** Jason Lucas, Matt Murtagh-White, Adaku Uchendu, Ali Al-Lawati, Michiharu Yamashita, Dominik Macko, Ivan Srba, Robert Moro, Dongwon Lee
 > **Venue:** KDD 2026 — Datasets and Benchmarks Track
 
 ---
