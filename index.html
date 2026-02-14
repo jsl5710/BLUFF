@@ -468,26 +468,36 @@
   <div class="container is-max-desktop">
     <h2 class="title is-3 has-text-centered">Data Collection</h2>
 
+    <!-- Human-Written Data Curation -->
     <div class="columns is-centered">
       <div class="column is-full">
-        <h3 class="title is-4">Human-Written Text (HWT) Collection</h3>
+        <h3 class="title is-4">Human-Written Data Curation</h3>
         <div class="content has-text-justified">
           <p>
-            Human-written content is sourced from <strong>IFCN-certified fact-checking organizations</strong> worldwide, ensuring editorial quality and veracity labels grounded in professional journalism standards. A custom web scraping pipeline collects articles in their original languages, preserving linguistic authenticity.
+            Human-written content is sourced from <strong>130 IFCN-certified fact-checking organizations</strong> worldwide, ensuring editorial quality and veracity labels grounded in professional journalism standards. A custom web scraping pipeline collects articles in their original languages, preserving linguistic authenticity. Source selection prioritizes organizations verified by the International Fact-Checking Network (IFCN), cross-referencing against the Iffy Index of unreliable sources to exclude any outlets flagged for low journalistic standards.
+          </p>
+          <p>
+            The collection spans <strong>57 languages</strong> (19 big-head, 38 long-tail), providing authentic human-written baselines against which machine-generated text is compared. Articles are processed using <strong>Qwen3-8B</strong> for initial language identification and <strong>GPT-5</strong> for veracity label extraction, disambiguating publisher-specific rating scales (e.g., "Pants on Fire," "Four Pinocchios") into standardized real/fake labels. <strong>Qwen3-32B</strong> handles structured information extraction. All three models are prompted with explicit instructions to preserve original-language text without translation.
           </p>
         </div>
         <div class="has-text-centered" style="margin: 1.5rem 0;">
           <img src="static/images/bluff_webscrapper_overview.jpg" alt="Web scraping pipeline for human-written text collection" style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);"/>
           <p class="is-size-7 has-text-centered" style="margin-top: 0.5rem; color: #64748b;">
-            <strong>Web Scraping Pipeline.</strong> Automated collection from IFCN-certified fact-checkers with source reputation filtering via the Iffy Index.
+            <strong>Web Scraping Pipeline.</strong> Automated collection from 130 IFCN-certified fact-checkers with source reputation filtering via the Iffy Index.
           </p>
         </div>
       </div>
     </div>
 
+    <!-- Multilingual Generation Pipeline -->
     <div class="columns is-centered" style="margin-top: 1rem;">
       <div class="column is-full">
-        <h3 class="title is-4">Source Corpora for Generation</h3>
+        <h3 class="title is-4">Multilingual Generation Pipeline</h3>
+        <div class="content has-text-justified">
+          <p>
+            The synthetic data generation pipeline draws from <strong>297,000+ seed articles</strong> across four complementary source corpora. Stratified random sampling (seed 42) ensures balanced representation across languages and source types, and each seed article is used exactly once to prevent data leakage.
+          </p>
+        </div>
         <div class="content">
           <table class="table is-bordered is-striped is-fullwidth">
             <thead>
@@ -532,6 +542,88 @@
               </tr>
             </tfoot>
           </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Generation Models -->
+    <div class="columns is-centered" style="margin-top: 1rem;">
+      <div class="column is-full">
+        <h3 class="title is-4">Generation Models</h3>
+        <div class="content has-text-justified">
+          <p>
+            Generation employs <strong>19 models</strong> spanning two categories: <strong>13 instruction-tuned LLMs</strong> (GPT-4.1, GPT-4.1 mini, GPT-4.1 nano, Gemini 2.0 Flash, Gemini 1.5 Flash, Llama 3.3 70B, Llama 4 Scout, Llama 4 Maverick, Aya Expanse 32B, Mistral Large, Phi-4, Qwen3-8B, Qwen3-32B) and <strong>6 reasoning LRMs</strong> (DeepSeek-R1, DeepSeek-R1 Distill Qwen 32B, DeepSeek-R1 Distill Llama 70B, QwQ 32B, o1, Gemini 2.0 Flash Thinking). This diverse model selection ensures the benchmark captures a wide range of generation artifacts, from fluent instruction-following outputs to chain-of-thought reasoning traces.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bidirectional Translation -->
+    <div class="columns is-centered" style="margin-top: 1rem;">
+      <div class="column is-full">
+        <h3 class="title is-4">Bidirectional Translation</h3>
+        <div class="content has-text-justified">
+          <p>
+            Each generation request uses one of <strong>4 prompt variants</strong> defined by crossing two veracity orientations (Fake, Real) with two translation directions: <strong>English&rarr;X</strong> (covering 70 languages) and <strong>X&rarr;English</strong> (covering 50 languages with sufficient non-English seeds). This bidirectional design captures both translation-into and translation-from artifacts, which exhibit distinct statistical signatures in machine-translated text (MTT). The complete generation pipeline yields approximately <strong>181,000 samples</strong> spanning <strong>1,890 unique tactic combinations</strong> of model, prompt variant, language, and source corpus.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Dataset Statistics -->
+    <div class="columns is-centered" style="margin-top: 1rem;">
+      <div class="column is-full">
+        <h3 class="title is-4">Dataset Statistics</h3>
+        <div class="content has-text-justified">
+          <p>
+            After mPURIFY quality filtering, BLUFF contains <strong>202,395 samples</strong> across 79 languages. The authorship distribution is:
+          </p>
+        </div>
+        <div class="content">
+          <table class="table is-bordered is-striped is-fullwidth">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Samples</th>
+                <th>Share</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>HWT</strong></td>
+                <td>Human-Written Text</td>
+                <td>122,836</td>
+                <td>60.7%</td>
+              </tr>
+              <tr>
+                <td><strong>HAT</strong></td>
+                <td>Human-Adapted Text (adversarial rewrites)</td>
+                <td>68,148</td>
+                <td>33.7%</td>
+              </tr>
+              <tr>
+                <td><strong>MGT</strong></td>
+                <td>Machine-Generated Text (direct LLM output)</td>
+                <td>19,234</td>
+                <td>9.5%</td>
+              </tr>
+              <tr>
+                <td><strong>MTT</strong></td>
+                <td>Machine-Translated Text (bidirectional)</td>
+                <td>156,886</td>
+                <td>77.5%</td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="is-size-7" style="color: #64748b;">
+            Note: Categories overlap&mdash;MGT and MTT are subsets of machine-produced content; HAT combines human editing with machine translation. Total unique samples: 202,395.
+          </p>
+        </div>
+        <div class="content has-text-justified">
+          <p>
+            The benchmark achieves <strong>100% coverage</strong> of all 1,890 unique manipulation tactic combinations and 5 of 9 editing configurations (55.6%). Linguistic diversity spans <strong>12 genetic families</strong>, <strong>9 script types</strong>, and <strong>6 syntactic typologies</strong>&mdash;providing comprehensive evaluation across the world's linguistic landscape.
+          </p>
         </div>
       </div>
     </div>
