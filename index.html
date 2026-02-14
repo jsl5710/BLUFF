@@ -369,6 +369,12 @@
 
     <div class="columns is-centered">
       <div class="column is-full">
+        <div class="content has-text-justified" style="margin-bottom: 2rem;">
+          <p>
+            The BLUFF pipeline implements an <strong>eight-stage process</strong> for multilingual generation and detection of false and synthetic content. Beginning with benchmark news corpora (<strong>Stage 1</strong>), we filter sources by reputation using the <a href="https://iffy.news/" target="_blank">Iffy Index</a> (<strong>Stage 2</strong>), selecting reputable organizations for real news and flagged sources for fake news seeds. From a parametric dictionary (<strong>Stage 3</strong>), we configure generation variables: language (79), transformation technique (36 tactics or 3 AI-edits), editing degree (3 levels), and jailbreak strategy (21+). These parameters feed into differentiated AXL-CoI prompts (<strong>Stage 4</strong>) processed by 19 frontier mLLMs (<strong>Stage 5</strong>) to generate bidirectionally translated content (English&harr;70 languages). All outputs undergo mPURIFY quality filtering (<strong>Stage 6</strong>), removing hallucinations, mistranslations, and structural defects. We enrich the dataset with human-written, fact-checked content from IFCN-certified organizations. Our BLUFF scraper machine translates (50&rarr;79 languages) human-written data (<strong>Stage 7</strong>). Finally, we evaluate detection capabilities (<strong>Stage 8</strong>) using fine-tuned encoder-based and in-context learning decoder-based multilingual transformers.
+          </p>
+        </div>
+
         <h3 class="title is-4">AXL-CoI: Adversarial Cross-Lingual Agentic Chain-of-Interactions</h3>
         <div class="content has-text-justified">
           <p>
