@@ -479,7 +479,7 @@ The dataset is released under [CC BY-NC-SA 4.0](https://creativecommons.org/lice
 
 ## 📧 Contact
 
-- **Jason Lucas** — [jsl5710@psu.edu](mailto:jsl5710@psu.edu) | [Website](https://jasonlucas.info)
+- **Jason Lucas** — [jsl5710@psu.edu](mailto:jsl5710@psu.edu) | [Website](https://www.jasonslucas.com/)
 - **Dongwon Lee** — [dongwon@psu.edu](mailto:dongwon@psu.edu)
 - **PIKE Research Lab** — Penn State University, College of IST
 
