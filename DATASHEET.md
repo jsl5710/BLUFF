@@ -7,7 +7,7 @@
 ## Motivation
 
 **For what purpose was the dataset created?**
-BLUFF was created to address the critical gap in multilingual fake news detection benchmarks. Existing resources are overwhelmingly English-centric or cover only a handful of high-resource languages, leaving low-resource linguistic communities — where disinformation often causes the greatest harm — without robust evaluation tools. BLUFF provides a standardized benchmark spanning 78 languages to enable equitable research in multilingual disinformation detection.
+BLUFF was created to address the critical gap in multilingual fake news detection benchmarks. Existing resources are overwhelmingly English-centric or cover only a handful of high-resource languages, leaving low-resource linguistic communities — where disinformation often causes the greatest harm — without robust evaluation tools. BLUFF provides a standardized benchmark spanning 79 languages to enable equitable research in multilingual disinformation detection.
 
 **Who created the dataset and on behalf of which entity?**
 Jason Lucas, Matt Murtagh-White, Adaku Uchendu, Ali Al-Lawati, Michiharu Yamashita, Dominik Macko, Ivan Srba, Robert Moro, and Dongwon Lee. Affiliations: Penn State University (USA), Trinity College Dublin (Ireland), MIT Lincoln Lab (USA), Visa Research (USA), and KInIT (Slovakia).
@@ -23,7 +23,7 @@ This work was supported in part by the Penn State College of Information Science
 Each instance is a news article or article segment labeled with veracity (real/fake), authorship type (human-written, machine-generated, machine-translated, or human-AI hybrid), language metadata, and content generation metadata.
 
 **How many instances are there in total?**
-Over 201,000 samples: approximately 122,836 human-written and 78,443 LLM-generated.
+Over 202,000 samples: approximately 122,836 human-written and 79,559 LLM-generated.
 
 **Does the dataset contain all possible instances or is it a sample?**
 It is a curated sample. Human-written content is sourced from publicly available fact-checking organizations. LLM-generated content is produced using the AXL-CoI framework with controlled generation parameters.

@@ -14,7 +14,7 @@
 
 ---
 
-**BLUFF** is a comprehensive benchmark for detecting *false* and *synthetic* content, spanning **78 languages** with over **201K samples** and **313K+ text instances**. It uniquely covers both high-resource "big-head" (20) and low-resource "long-tail" (58) languages, combining human-written fact-checked content (122K+ samples across 57 languages) and LLM-generated content (78K+ samples across 71 languages) to address critical gaps in multilingual disinformation research.
+**BLUFF** is a comprehensive benchmark for detecting *false* and *synthetic* content, spanning **79 languages** with over **202K samples**. It uniquely covers both high-resource "big-head" (20) and low-resource "long-tail" (59) languages, combining human-written fact-checked content (122K+ samples across 57 languages) and LLM-generated content (79K+ samples across 71 languages) to address critical gaps in multilingual research on detecting false and synthetic content.
 
 > **Paper:** *BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news*
 > **Authors:** Jason Lucas, Matt Murtagh-White, Adaku Uchendu, Ali Al-Lawati, Michiharu Yamashita, Dominik Macko, Ivan Srba, Robert Moro, Dongwon Lee
@@ -24,8 +24,8 @@
 
 ## 🔑 Key Features
 
-- **78 Languages** across 12 language families, 10 script types, and 4 syntactic orders
-- **201K+ Samples** combining human-written (122K) and LLM-generated (78K) content
+- **79 Languages** across 12 language families, 10 script types, and 4 syntactic orders
+- **202K+ Samples** combining human-written (122K) and LLM-generated (79K) content
 - **4 Content Types:** Human-Written (HWT), Machine-Generated (MGT), Machine-Translated (MTT), and Human-AI Hybrid (HAT)
 - **39 Textual Modification Techniques:** 36 manipulation tactics for fake news + 3 AI-editing strategies for real news
 - **19 Diverse mLLMs** used for content generation
@@ -122,7 +122,7 @@ BLUFF/
 
 ## 🌐 Language Coverage
 
-BLUFF covers **78 languages** organized into:
+BLUFF covers **79 languages** organized into:
 
 | Category | Count | Examples |
 |----------|-------|---------|
@@ -311,7 +311,7 @@ Cleaned, model-ready text data organized by source type:
 Rich per-sample metadata with quality filtering results, provenance, and generation details:
 
 - **`metadata_human_written.csv`** (122K rows, 33 columns) — Includes organization, country, platform, category, topic, language classification (`head`/`tail`), mPURIFY quality fields (`lang_pass`, `is_duplicate`, `json_parse`), and extraction paths
-- **`metadata_ai_generated.csv`** (78K rows, 29 columns) — Includes generating mLLM name, manipulation techniques, edit intensity, translation direction, source provenance, and mPURIFY filtering status
+- **`metadata_ai_generated.csv`** (79K rows, 29 columns) — Includes generating mLLM name, manipulation techniques, edit intensity, translation direction, source provenance, and mPURIFY filtering status
 
 ### Split Files (`data/splits/evaluation/`)
 
@@ -370,7 +370,7 @@ mPURIFY combines heuristics, standard AEM, and LLM-based AEM across **5 dimensio
 | **Hallucination** | SelfCheckGPT | Intrinsic cross-lingual hallucination detection |
 | **Defective** | Structure/format checks | Incomplete chains, malformed JSON |
 
-**Filtering results:** 181,966 initial → 87,211 defect-free → **78,443 retained (43.1%)** → **313,772 total text instances** (4 texts per sample).
+**Filtering results:** 181,966 initial → 87,211 defect-free → **79,559 retained (43.7%)**.
 
 <p align="center">
   <img src="figures/fig_generation_pipeline.png" alt="Generation Pipeline Results" width="700"/>
@@ -386,7 +386,7 @@ mPURIFY combines heuristics, standard AEM, and LLM-based AEM across **5 dimensio
 - **Languages:** 57 languages, 122,836 samples
 - **Collection:** AI-assisted crawler extracts claims, articles, source content, metadata, social media posts, and translations; multi-tool language detection (fastText, pycld3, Polyglot) with majority voting; MinHash near-duplicate removal
 - **Labels:** Veracity labels inherited from professional fact-checker verdicts, standardized to `fake_news`/`real_news`
-- **Translation:** Content from 50 source languages machine-translated to expand coverage to 78 languages
+- **Translation:** Content from 50 source languages machine-translated to expand coverage to 79 languages
 
 ### Stage 8: Detection Evaluation
 

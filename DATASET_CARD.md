@@ -11,9 +11,9 @@
 
 ### Dataset Summary
 
-BLUFF (**B**enchmarking in **L**ow-reso**U**rce Languages for detecting **F**alsehoods and **F**ake news) is a comprehensive benchmark for detecting *false* and *synthetic* content, spanning **78 languages** with over **201K samples**. It combines human-written fact-checked content (122K+ samples across 57 languages from 331 IFCN-certified organizations) and LLM-generated content (78K+ samples across 71 languages using 19 diverse mLLMs) to provide the first comprehensive testbed for disinformation detection beyond high-resource settings.
+BLUFF (**B**enchmarking in **L**ow-reso**U**rce Languages for detecting **F**alsehoods and **F**ake news) is a comprehensive benchmark for detecting *false* and *synthetic* content, spanning **79 languages** with over **202K samples**, combining human-written fact-checked content (122K+ samples across 57 languages) and LLM-generated content (79K+ samples across 71 languages). BLUFF uniquely covers both high-resource "big-head" (20) and low-resource "long-tail" (59) languages, addressing critical gaps in multilingual research on detecting false and synthetic content.
 
-The dataset features four content types (human-written, LLM-generated, LLM-translated, and hybrid human-LLM text), bidirectional translation (English&#8596;X), 39 textual modification techniques (36 manipulation tactics for fake news, 3 AI-editing strategies for real news), and varying edit intensities. Each AI-generated sample comprises 4 text instances (news article + social media post in source and target languages), yielding **313,772 total text instances**.
+The dataset features four content types (human-written, LLM-generated, LLM-translated, and hybrid human-LLM text), bidirectional translation (English&#8596;X), 39 textual modification techniques (36 manipulation tactics for fake news, 3 AI-editing strategies for real news), and varying edit intensities generated using 19 diverse LLMs. We present *AXL-CoI* (Adversarial Cross-Lingual Agentic Chain-of-Interactions), a novel multi-agentic framework for controlled fake/real news generation, paired with *mPURIFY*, a quality filtering pipeline ensuring dataset integrity. Experiments reveal state-of-the-art detectors suffer up to **25.3% F1 degradation** on low-resource versus high-resource languages.
 
 ### Supported Tasks
 
@@ -26,7 +26,7 @@ The dataset features four content types (human-written, LLM-generated, LLM-trans
 
 ### Languages
 
-78 languages across 12 families:
+79 languages across 12 families:
 
 **Big-Head (20 high-resource):** ar, bn, de, en, es, fa, fr, hi, id, it, ja, ko, nl, pl, pt, ru, sv, tr, uk, zh
 
@@ -44,7 +44,7 @@ The dataset is hosted on HuggingFace at [`jsl5710/BLUFF`](https://huggingface.co
 data/
 ├── meta_data/                          # Sample metadata (~100 MB)
 │   ├── metadata_human_written.csv       (122K rows, 33 columns)
-│   └── metadata_ai_generated.csv        (78K rows, 29 columns)
+│   └── metadata_ai_generated.csv        (79K rows, 29 columns)
 │
 ├── processed/                          # Cleaned, model-ready text data (~1.4 GB)
 │   └── generated_data/
@@ -187,7 +187,7 @@ Comprehensive per-sample metadata for all 122K human-written samples. Used for d
 
 ### 4. Metadata — AI-Generated (`meta_data/metadata_ai_generated.csv`)
 
-Comprehensive per-sample metadata for all 78K AI-generated samples, including mPURIFY quality filtering results and generation provenance. **29 columns:**
+Comprehensive per-sample metadata for all 79K AI-generated samples, including mPURIFY quality filtering results and generation provenance. **29 columns:**
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -344,7 +344,7 @@ The BLUFF pipeline implements an eight-stage process for multilingual generation
 4. **AXL-CoI Prompting** — Parameters feed into differentiated prompts with 10 specialized agents (fake) or 8 agents (real)
 5. **Generation** — 19 frontier mLLMs produce bidirectional translated content (English&#8596;70 languages)
 6. **mPURIFY Filtering** — Quality filtering removes hallucinations, mistranslations, and structural defects
-7. **Human-Written Enrichment** — BLUFF scraper collects and machine-translates fact-checked content (50&#8594;78 languages)
+7. **Human-Written Enrichment** — BLUFF scraper collects and machine-translates fact-checked content (50&#8594;79 languages)
 8. **Detection Evaluation** — Encoder-based fine-tuning and decoder-based in-context learning experiments
 
 ### Human-Written Content (HWT)
@@ -361,7 +361,7 @@ The BLUFF pipeline implements an eight-stage process for multilingual generation
 3. **Language Detection:** Multi-tool language identification using fastText (176 languages), pycld3 (100+ languages), and Polyglot (196 languages) with majority voting (`src/data_collection/language_detector.py`)
 4. **Standardization:** Organization names, country codes (ISO 3166-1 alpha-3), veracity labels, and topic categories normalized to canonical forms
 5. **Deduplication:** Near-duplicate detection via MinHash and Jaccard similarity
-6. **Machine Translation:** Content from 50 source languages machine-translated to expand coverage to 78 languages for cross-lingual evaluation
+6. **Machine Translation:** Content from 50 source languages machine-translated to expand coverage to 79 languages for cross-lingual evaluation
 
 **Veracity Labels:** Inherited directly from professional fact-checker verdicts. Original labels (e.g., `false`, `misleading`, `satire`, `unverified`, `mostly false`, `needs context`) standardized to `fake_news` or `real_news` for binary classification tasks.
 
@@ -379,7 +379,7 @@ Seed articles drawn from four diverse news datasets via stratified random sampli
 |---------------|----------|-------------|
 | Global News | 82K | 31+ international news organizations |
 | CNN/Daily Mail | 82K | English-language news articles |
-| MassiveSumm | 51K | Multilingual articles across 78 languages |
+| MassiveSumm | 51K | Multilingual articles across 79 languages |
 | Visual News | 82K | News articles with visual content |
 | **Total Seeds** | **297K+** | Each seed used only once in generation |
 
@@ -514,7 +514,7 @@ mPURIFY executes four sequential stages: (1) defect identification, (2) LLM-base
 |-------|---------|-------------|
 | Initial generation | 181,966 | Raw output from 19 mLLMs |
 | After defect removal | 87,211 | Structural defects removed |
-| After mPURIFY | **78,443 (43.1%)** | Quality-filtered: 41,779 real + 36,664 fake |
+| After mPURIFY | **79,559 (43.7%)** | Quality-filtered |
 | Total text instances | **313,772** | 4 texts per sample (article + post × 2 languages) |
 
 The retention differential (real: 23.0% vs fake: 20.1%) reflects the greater complexity of maintaining deliberate manipulations through multi-stage processing and cross-lingual transformations. Translation poses the greatest challenge for fake news (90.1% combined pass rate).
@@ -537,7 +537,7 @@ The retention differential (real: 23.0% vs fake: 20.1%) reflects the greater com
 
 | Setting | Split Directory | Description |
 |---------|----------------|-------------|
-| Multilingual | `multilingual/` | Train and evaluate on all 78 languages |
+| Multilingual | `multilingual/` | Train and evaluate on all 79 languages |
 | Cross-lingual (Head→Tail) | `cross_lingual_bighead_longtail/` | Train on 20 big-head languages, evaluate on 58 long-tail |
 | Cross-lingual (Family) | `cross_lingual_family/{Family}/` | Leave-one-language-family-out evaluation |
 | Cross-lingual (Script) | `cross_lingual_script/{Script}/` | Leave-one-script-type-out evaluation |

@@ -34,8 +34,8 @@ This document summarizes the comprehensive experimental results from the BLUFF b
 
 ### Evaluation Settings
 
-- **Cross-lingual:** Train on English only, evaluate on all 78 languages
-- **Multilingual:** Train on stratified multilingual sample, evaluate on all 78 languages
+- **Cross-lingual:** Train on English only, evaluate on all 79 languages
+- **Multilingual:** Train on stratified multilingual sample, evaluate on all 79 languages
 - **Three prompt regimens (decoder):** Cross-lingual, Native, English-Translated
 
 ---

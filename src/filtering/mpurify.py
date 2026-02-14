@@ -16,7 +16,7 @@ Evaluation Metrics:
     LLM-AEM: 32 features scored by LLM evaluators with asymmetric thresholds
 
 Retention Rates:
-    Overall: 78,443/181,966 samples (43.1%)
+    Overall: 79,559/181,966 samples (43.7%)
     Real: 41,779 (23.0%)
     Fake: 36,664 (20.1%)
 

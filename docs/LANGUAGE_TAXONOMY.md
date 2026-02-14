@@ -1,6 +1,6 @@
 # BLUFF Language Taxonomy
 
-This document provides the complete linguistic classification for all 78 languages in the BLUFF benchmark, organized by resource category, language family, script type, and syntactic word order.
+This document provides the complete linguistic classification for all 79 languages in the BLUFF benchmark, organized by resource category, language family, script type, and syntactic word order.
 
 ---
 
