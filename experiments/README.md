@@ -660,16 +660,7 @@ Invalid outputs are stored in `predictions.parquet` with:
 
 If you use this benchmark, please cite:
 
-```bibtex
-@inproceedings{lucas2026bluff,
-    title     = {{BLUFF}: A Benchmark for Linguistic Understanding of Fake-news Forensics},
-    author    = {Lucas, Jason and Lee, Dongwon},
-    booktitle = {Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining (KDD)},
-    year      = {2026},
-    publisher = {ACM},
-    address   = {Toronto, Canada}
-}
-```
+Paper currently under review. Citation will be provided upon acceptance.
 
 ---
 
