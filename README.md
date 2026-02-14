@@ -1,7 +1,7 @@
-# BLUFF: Benchmark for Linguistic Understanding of Fake-news Forensics
+# BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news
 
 <p align="center">
-  <img src="figures/bluff_overview.png" alt="BLUFF Overview" width="800"/>
+  <img src="figures/bluff_framework_overview.png" alt="BLUFF Framework Overview" width="900"/>
 </p>
 
 <p align="center">
@@ -13,11 +13,11 @@
 
 ---
 
-**BLUFF** is a comprehensive multilingual benchmark for fake news detection spanning **78 languages** with over **201K samples**. It uniquely covers both high-resource "big-head" (20) and low-resource "long-tail" (58) languages, addressing critical gaps in multilingual disinformation research.
+**BLUFF** is a comprehensive benchmark for detecting *false* and *synthetic* content, spanning **78 languages** with over **201K samples** and **313K+ text instances**. It uniquely covers both high-resource "big-head" (20) and low-resource "long-tail" (58) languages, combining human-written fact-checked content (122K+ samples across 57 languages) and LLM-generated content (78K+ samples across 71 languages) to address critical gaps in multilingual disinformation research.
 
-> **Paper:** *BLUFF: A Benchmark for Linguistic Understanding of Fake-news Forensics*  
-> **Authors:** Jason Lucas, Dongwon Lee  
-> **Venue:** KDD 2026 — Datasets and Benchmarks Track  
+> **Paper:** *BLUFF: Benchmarking in Low-resoUrce Languages for detecting Falsehoods and Fake news*
+> **Authors:** Jason Lucas, Dongwon Lee
+> **Venue:** KDD 2026 — Datasets and Benchmarks Track
 
 ---
 
@@ -326,31 +326,72 @@ See [`DATASET_CARD.md`](DATASET_CARD.md) for complete field-by-field documentati
 
 ## 📑 Data Collection & Methodology
 
-### Human-Written Text (HWT)
-- **Sources:** 331 IFCN-certified fact-checking organizations and CredCatalog-indexed publishers across 99 countries
+BLUFF implements an **8-stage pipeline** for multilingual generation and detection of false and synthetic content. The full pipeline is illustrated in the framework diagram above.
+
+### Stage 1–2: Source Data & Reputation Filtering
+
+**Source Corpora (297K+ seed articles):**
+
+| Dataset | Articles | Description |
+|---------|----------|-------------|
+| Global News | 82K | 31+ international news organizations |
+| CNN/Daily Mail | 82K | English-language news |
+| MassiveSumm | 51K | Multilingual articles across 78 languages |
+| Visual News | 82K | News articles with visual content |
+
+Sources classified by reputation using the [Iffy Index](https://iffy.news/): reputable organizations (BBC, CNN, The Guardian, Al Jazeera) provide real news seeds; flagged sources provide fake news seeds. Stratified random sampling (seed 42) by language, organization, and location ensures diversity.
+
+### Stage 3–5: AXL-CoI Generation Framework
+
+**AXL-CoI** (Adversarial Cross-Lingual Agentic Chain-of-Interactions) is a novel multi-agentic framework that embeds specialized agents within a single mLLM prompt for multi-step content transformation, translation, change tracking, validation, and self-correction.
+
+- **ADIS** (Autonomous Dynamic Impersonation Self-Attack): Gradient-free jailbreak achieving **100% bypass rate** across all 19 frontier models via dynamic persona cycling with 21 impersonation strategies
+- **Fake News Pipeline (10 chains):** Analyst → Manipulator (36 tactics) → Auditor → Editor → Validator → Adjuster → Translator → Localization QA → Evaluator → SM Formatter
+- **Real News Pipeline (8 chains):** Analyst → Dynamic Editor (rewrite/polish/refine) → Validator → Adjuster → Translator → Localization QA → Evaluator → SM Formatter
+
+**Generation Parameters (7 orthogonal dimensions):** veracity, editing degree (3 levels), manipulation technique (39 types), translation direction (Eng↔X), format (article/post), authorship (HWT/MGT/MTT/HAT), generation model (19 mLLMs) — yielding **30,240 unique fake news** and **144 real news configurations** per language.
+
+**19 Generation Models:** GPT-4.1, o1, Gemini 1.5 Flash/Pro, Gemini 2.0 Flash/Thinking, Llama 3.3 70B, Llama 4 Maverick/Scout, DeepSeek-R1/R1-Turbo/R1-Distill, Aya Expanse 32B, Qwen3-Next 80B, QwQ-32B, Mistral Large, Phi-4 Multimodal
+
+### Stage 6: Quality Filtering (mPURIFY)
+
+<p align="center">
+  <img src="figures/mPURiFY_overview.png" alt="mPURIFY Pipeline" width="500"/>
+</p>
+
+mPURIFY combines heuristics, standard AEM, and LLM-based AEM across **5 dimensions** using **32 evaluation features**:
+
+| Dimension | Standard AEM Methods | LLM-AEM Metrics |
+|-----------|---------------------|-----------------|
+| **Consistency** | MENLI, FrugalScore, AlignScore, BERTScore, sentiment | Factual, logical, semantic, contextual alignment |
+| **Validation** | LLM-DetectAIve, Jaccard/Levenshtein/Difflib | Change validity, technique confirmation |
+| **Translation** | YiSi-2, COMET-QE, LaBSE-BERTScore, fastText/pycld3/Polyglot | Accuracy, fluency, terminology, localization |
+| **Hallucination** | SelfCheckGPT | Intrinsic cross-lingual hallucination detection |
+| **Defective** | Structure/format checks | Incomplete chains, malformed JSON |
+
+**Filtering results:** 181,966 initial → 87,211 defect-free → **78,443 retained (43.1%)** → **313,772 total text instances** (4 texts per sample).
+
+<p align="center">
+  <img src="figures/fig_generation_pipeline.png" alt="Generation Pipeline Results" width="700"/>
+</p>
+
+### Stage 7: Human-Written Content (HWT)
+
+<p align="center">
+  <img src="figures/bluff_webscrapper_overview.jpg" alt="BLUFF Crawler" width="600"/>
+</p>
+
+- **Sources:** 331 IFCN-certified fact-checking organizations (Poynter IFCN Signatories) and CredCatalog-indexed publishers across 99 countries
 - **Languages:** 57 languages, 122,836 samples
-- **Collection:** Custom scrapers collected fact-check articles; multi-tool language detection (fastText, langdetect, langid) verified language consistency; near-duplicate detection via MinHash removed redundant content
-- **Labels:** Veracity labels inherited directly from professional fact-checker verdicts, standardized to `fake_news`/`real_news`
+- **Collection:** AI-assisted crawler extracts claims, articles, source content, metadata, social media posts, and translations; multi-tool language detection (fastText, pycld3, Polyglot) with majority voting; MinHash near-duplicate removal
+- **Labels:** Veracity labels inherited from professional fact-checker verdicts, standardized to `fake_news`/`real_news`
+- **Translation:** Content from 50 source languages machine-translated to expand coverage to 78 languages
 
-### LLM-Generated Content (MGT/MTT/HAT)
-- **Framework:** AXL-CoI (Adversarial Cross-Lingual Agentic Chain-of-Interactions) — a multi-agent pipeline for controlled adversarial generation
-- **Models:** 19 multilingual LLMs including GPT-4.1, o1, Gemini 1.5/2.0, Llama 3.3/4, DeepSeek-R1 variants, Aya Expanse 32B, Qwen3-Next 80B, QwQ-32B, Mistral Large, Phi-4 Multimodal
-- **Languages:** 71 languages, 78,443 samples
-- **Techniques:** 39 textual modification techniques (36 manipulation tactics for fake news + 3 AI-editing strategies for real news) applied at 3 intensity levels (`minor`, `moderate`, `critical`)
-- **Directionality:** Bidirectional generation (English→X and X→English) with quality verification
-- **Content Types:** MGT (fully machine-generated), MTT (machine-translated), HAT (human-AI hybrid)
+### Stage 8: Detection Evaluation
 
-### Quality Filtering (mPURIFY)
-All AI-generated content is processed through the mPURIFY pipeline (32 features, 5 dimensions):
-1. **Language Consistency** — Multi-tool verification that output matches target language (`lang_pass` field)
-2. **Semantic Preservation** — Coherence scoring against source material
-3. **Factual Manipulation Validation** — Confirms intended techniques were applied
-4. **Deduplication** — MinHash-based near-duplicate detection (`is_duplicate` field)
-5. **Format Validation** — JSON parsing and structural integrity checks (`json_parse`, `json_repaired` fields)
+Systematic benchmarking across 6 training settings with encoder-based fine-tuning and decoder-based in-context learning. Results reveal **up to 25.3% F1 degradation** on low-resource versus high-resource languages, with analysis across linguistic groupings (family, syntax, script, resource level).
 
-Results are recorded in metadata fields (`mPURIFY` in AI metadata, `lang_pass`/`is_duplicate`/`json_parse` in both).
-
-See the paper, [`DATASET_CARD.md`](DATASET_CARD.md), and [`DATASHEET.md`](DATASHEET.md) for complete methodology details.
+See [`DATASET_CARD.md`](DATASET_CARD.md) for complete field-by-field data documentation, and [`DATASHEET.md`](DATASHEET.md) for the full Gebru et al. (2021) datasheet.
 
 ---
 
@@ -413,6 +454,17 @@ We maintain benchmark results for community reference. Submit new results via pu
 | 3 | XLM-R-large | 84.7 | 87.3 | — | Multilingual |
 
 *Big-head only; see full results in [`docs/RESULTS.md`](docs/RESULTS.md)
+
+### Cross-Lingual Transfer Analysis
+
+<p align="center">
+  <img src="figures/fig_transfer_heatmaps_combined.png" alt="Cross-Lingual Transfer Heatmaps" width="800"/>
+</p>
+
+<p align="center">
+  <img src="figures/fig_transfer_family.png" alt="Transfer by Language Family" width="400"/>
+  <img src="figures/fig_transfer_script.png" alt="Transfer by Script" width="400"/>
+</p>
 
 ---
 
